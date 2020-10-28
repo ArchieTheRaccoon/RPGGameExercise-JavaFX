@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Pane prefHeight="690.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller">
+<Pane prefHeight="690.0" prefWidth="735.0" style="-fx-background-color: linear-gradient(to top left, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller">
    <children>
       <Label layoutX="18.0" layoutY="20.0" text="Hit Points:" />
       <Label layoutX="18.0" layoutY="46.0" text="Gold:" />
