@@ -68,14 +68,14 @@
         <TextField fx:id="txtMessages" editable="false" layoutX="347.0" layoutY="130.0" prefHeight="286.0" prefWidth="360.0" style="-fx-background-radius: 10;" />
         <TableView fx:id="tblInventory" layoutX="16.0" layoutY="130.0" prefHeight="309.0" prefWidth="312.0">
             <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn id="tblclmnItemName" fx:id="tblclmnItemName" editable="false" prefWidth="156.0" sortable="false" text="Item Name" />
+                <TableColumn id="tblclmnQuantity" fx:id="tblclmnQuantity" editable="false" prefWidth="156.0" sortable="false" text="Amount" />
             </columns>
         </TableView>
         <TableView fx:id="tblQuests" layoutX="16.0" layoutY="446.0" prefHeight="189.0" prefWidth="312.0" style="-fx-background-radius: 10;">
             <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="75.0" text="C2" />
+                <TableColumn id="tblclmnQuestName" fx:id="tblclmnQuestName" editable="false" prefWidth="156.0" sortable="false" text="Quest" />
+                <TableColumn id="tblclmnDone" fx:id="tblclmnDone" prefWidth="156.0" text="Finished?" />
             </columns>
         </TableView>
     </children>
