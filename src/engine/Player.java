@@ -6,6 +6,7 @@ public class Player extends LivingCreature {
     private int gold, experiencePoints, level;
     private ArrayList<InventoryItem> inventory;
     private ArrayList<PlayerQuest> quests;
+    private Location currentLocation;
 
     public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints, int level) {
         super(currentHitPoints, maximumHitPoints);
@@ -56,4 +57,11 @@ public class Player extends LivingCreature {
         this.quests = quests;
     }
 
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+    }
 }

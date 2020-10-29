@@ -1,6 +1,6 @@
 package ui;
 
-import engine.Player;
+import engine.*;
 import javafx.scene.control.*;
 
 public class Controller {
@@ -23,6 +23,10 @@ public class Controller {
     public TextField txtMessages;
     public TableView tblInventory;
     public TableView tblQuests;
+
+    private Player player;
+    private Monster currentMonster;
+    private World world;
 
     public void initialize() {
         Player player = new Player(10, 10, 20, 0, 1);
@@ -47,5 +51,27 @@ public class Controller {
 
     public void clickButtonWest() {
         System.out.println("Boi");
+    }
+
+    private void moveTo(Location newLocation) {
+        if (newLocation.getItemRequiredToEnter() != null) {
+            boolean playerHasRequiredItem = false;
+
+            for (InventoryItem ii : player.getInventory()) {
+                if (ii.getDetails().getId() == newLocation.getItemRequiredToEnter().getId()) {
+                    playerHasRequiredItem = true;
+                    break;
+                }
+            }
+
+            if (!playerHasRequiredItem) {
+                txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
+                return;
+            }
+        }
+        player.setCurrentLocation(newLocation);
+
+        btnNorth.setVisible(newLocation.getLocationToNorth() != null);
+        btnEast.setVisible(newLocation.getLocationToEast() != null);
     }
 }
