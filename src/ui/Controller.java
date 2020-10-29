@@ -73,5 +73,78 @@ public class Controller {
 
         btnNorth.setVisible(newLocation.getLocationToNorth() != null);
         btnEast.setVisible(newLocation.getLocationToEast() != null);
+        btnSouth.setVisible(newLocation.getLocationToSouth() != null);
+        btnWest.setVisible(newLocation.getLocationToWest() != null);
+
+        txtLocation.setText(newLocation.getName() + "\n");
+        txtLocation.appendText(newLocation.getDescription() + "\n");
+
+        player.setCurrentHitPoints(player.getMaximumHitPoints());
+
+        lblHitPoints.setText(Integer.toString(player.getCurrentHitPoints()));
+
+        if (newLocation.getQuestAvailableHere() != null) {
+            boolean playerAlreadyHasQuest = false;
+            boolean playerAlreadyCompletedQuest = false;
+
+            for (PlayerQuest playerQuest : player.getQuests()) {
+                if (playerQuest.getDetails().getId() == newLocation.getQuestAvailableHere().getId()) {
+                    playerAlreadyHasQuest = true;
+                    if (playerQuest.isCompleted()) {
+                        playerAlreadyCompletedQuest = true;
+                    }
+                }
+            }
+
+            if (playerAlreadyHasQuest) {
+                if (!playerAlreadyCompletedQuest) {
+                    boolean playerHasAllItemsToCompleteQuest = true;
+
+                    for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
+                        boolean foundItemInPlayersInventory = false;
+
+                        for (InventoryItem ii : player.getInventory()) {
+                            if (ii.getDetails().getId() == qci.getDetails().getId()) {
+                                foundItemInPlayersInventory = true;
+                                if (ii.getQuantity() < qci.getQuantity()) {
+                                    playerHasAllItemsToCompleteQuest = false;
+                                    break;
+                                }
+                                break;
+                            }
+                        }
+
+                        if (!foundItemInPlayersInventory) {
+                            playerHasAllItemsToCompleteQuest = false;
+                            break;
+                        }
+                    }
+
+                    if (playerHasAllItemsToCompleteQuest) {
+                        txtMessages.appendText("\nYou completed the " + newLocation.getQuestAvailableHere().getName() + "quest.\n");
+
+                        for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
+                            for (InventoryItem ii : player.getInventory()) {
+                                if (ii.getDetails().getId() == qci.getDetails().getId()) {
+                                    ii.setQuantity(ii.getQuantity() - qci.getQuantity());
+                                    break;
+                                }
+                            }
+                        }
+
+                        txtMessages.appendText("You receive \n")
+                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardExperiencePoints() + " experience points\n");
+                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardItem().getName() + " gold\n");
+                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardItem().getName() + "\n");
+                        txtMessages.appendText("\n");
+
+                        player.setExperiencePoints(player.getExperiencePoints() + newLocation.getQuestAvailableHere().getRewardExperiencePoints());
+                        player.setGold(player.getGold() + newLocation.getQuestAvailableHere().getRewardGold());
+
+                        
+                    }
+                }
+            }
+        }
     }
 }
