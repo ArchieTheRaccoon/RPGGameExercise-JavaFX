@@ -1,12 +1,7 @@
 package ui;
 
-import com.sun.javafx.css.converters.StringConverter;
 import engine.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +12,8 @@ public class Controller {
     public Label lblExperience;
     public Label lblLevel;
 
-    public ComboBox cboWeapons;
-    public ComboBox cboPotions;
+    public ComboBox<String> cboWeapons;
+    public ComboBox<String> cboPotions;
     public Button btnUseWeapon;
     public Button btnUsePotion;
 
@@ -32,11 +27,10 @@ public class Controller {
     public TableView<InventoryTable> tblInventory;
     public TableView<QuestTable> tblQuests;
 
-    public ObservableList<InventoryTable> listOfItemsTable = FXCollections.observableArrayList();
-
     private Player player;
     private Monster currentMonster;
     private World world;
+
 
     public void initialize() {
         Player player = new Player(10, 10, 20, 0, 1);
@@ -181,9 +175,9 @@ public class Controller {
                 txtMessages.appendText("To complete it, return with:\n");
                 for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
                     if (qci.getQuantity() == 1) {
-                        txtMessages.appendText(Integer.toString(qci.getQuantity()) + " " + qci.getDetails().getName() + "\n");
+                        txtMessages.appendText(qci.getQuantity() + " " + qci.getDetails().getName() + "\n");
                     } else {
-                        txtMessages.appendText(Integer.toString(qci.getQuantity()) + " " + qci.getDetails().getNamePlural() + "\n");
+                        txtMessages.appendText(qci.getQuantity() + " " + qci.getDetails().getNamePlural() + "\n");
                     }
                 }
                 txtMessages.appendText("\n");
@@ -227,7 +221,7 @@ public class Controller {
             tblQuests.getItems().add(questTable);
         }
 
-        List<Weapon> weapons = new ArrayList<Weapon>();
+        List<Weapon> weapons = new ArrayList<>();
 
         for (InventoryItem ii : player.getInventory()) {
             if (ii.getDetails() instanceof Weapon) {
@@ -247,7 +241,7 @@ public class Controller {
             }
         }
 
-        List<HealingPotion> healingPotions = new ArrayList<HealingPotion>();
+        List<HealingPotion> healingPotions = new ArrayList<>();
 
         for (InventoryItem ii : player.getInventory()) {
             if (ii.getDetails() instanceof HealingPotion) {
@@ -267,9 +261,5 @@ public class Controller {
                 cboPotions.getItems().add(hp.getName());
             }
         }
-    }
-
-    public void updateTableItems() {
-        String newl
     }
 }
