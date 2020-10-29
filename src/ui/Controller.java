@@ -1,6 +1,7 @@
 package ui;
 
 import engine.Player;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class Controller {
@@ -8,6 +9,7 @@ public class Controller {
     public Label lblGold;
     public Label lblExperience;
     public Label lblLevel;
+    public Button btnWest;
 
     public void initialize() {
         Player player = new Player(10, 10, 20, 0, 1);
