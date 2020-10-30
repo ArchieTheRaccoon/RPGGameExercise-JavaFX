@@ -1,7 +1,10 @@
 package ui;
 
 import engine.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +25,14 @@ public class Controller {
     public Button btnSouth;
     public Button btnWest;
 
-    public TextField txtLocation;
-    public TextField txtMessages;
+    public TextArea txtLocation;
+    public TextArea txtMessages;
     public TableView<InventoryTable> tblInventory;
     public TableView<QuestTable> tblQuests;
+    public TableColumn<InventoryTable, String> tblclmnItemName;
+    public TableColumn<InventoryTable, String> tblclmnQuantity;
+    public TableColumn<QuestTable, String> tblclmnQuestName;
+    public TableColumn<QuestTable, String> tblclmnDone;
 
     private Player player = new Player(10,10,20,0,1);
     private Monster currentMonster;
@@ -34,6 +41,7 @@ public class Controller {
 
     public void initialize() {
         initializeComponents();
+        updateInventoryListUI();
     }
 
     public void clickButtonNorth() {
@@ -62,6 +70,11 @@ public class Controller {
         lblGold.setText(String.valueOf(player.getGold()));
         lblExperience.setText(String.valueOf(player.getExperiencePoints()));
         lblLevel.setText(String.valueOf(player.getLevel()));
+
+        tblclmnItemName.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
+        tblclmnQuantity.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
+        tblclmnQuestName.setCellValueFactory(new PropertyValueFactory<>("NameQuest"));
+        tblclmnDone.setCellValueFactory(new PropertyValueFactory<>("IsCompleted"));
     }
 
     private void moveTo(Location newLocation) {
@@ -153,21 +166,27 @@ public class Controller {
     }
 
     private void updateInventoryListUI() {
+        ObservableList<InventoryTable> shortInventoryList = FXCollections.observableArrayList();
         tblInventory.getItems().clear();
 
         for (InventoryItem ii : player.getInventory()) {
             if (ii.getQuantity() > 0) {
-                tblInventory.getItems().add(new InventoryTable(ii.getDetails().getName(), String.valueOf(ii.getQuantity())));
+                shortInventoryList.add(new InventoryTable(ii.getDetails().getName(), String.valueOf(ii.getQuantity())));
             }
         }
+
+        tblInventory.setItems(shortInventoryList);
     }
 
     private void updateQuestListUI() {
+        ObservableList<QuestTable> shortQuestList = FXCollections.observableArrayList();
         tblQuests.getItems().clear();
 
         for (PlayerQuest pq : player.getQuests()) {
-            tblQuests.getItems().add(new QuestTable(pq.getDetails().getName(), String.valueOf(pq.isCompleted())));
+            shortQuestList.add(new QuestTable(pq.getDetails().getName(), pq.isCompleted()));
         }
+
+        tblQuests.setItems(shortQuestList);
     }
 
     private void updateWeaponListUI() {
