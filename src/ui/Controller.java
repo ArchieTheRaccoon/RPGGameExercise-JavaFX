@@ -33,15 +33,7 @@ public class Controller {
 
 
     public void initialize() {
-        Player player = new Player(10, 10, 20, 0, 1);
-
-        player.setCurrentLocation(World.locationByID(World.LOCATION_ID_HOME));
-        player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
-
-        lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
-        lblGold.setText(String.valueOf(player.getGold()));
-        lblExperience.setText(String.valueOf(player.getExperiencePoints()));
-        lblLevel.setText(String.valueOf(player.getLevel()));
+        initializeComponents();
     }
 
     public void clickButtonNorth() {
@@ -60,23 +52,25 @@ public class Controller {
         moveTo(player.getCurrentLocation().getLocationToWest());
     }
 
+    private void initializeComponents() {
+        world = new World();
+        Player player = new Player(10, 10, 20, 0, 1);
+        player.setCurrentLocation(World.locationByID(World.LOCATION_ID_HOME));
+        player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
+
+
+        lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
+        lblGold.setText(String.valueOf(player.getGold()));
+        lblExperience.setText(String.valueOf(player.getExperiencePoints()));
+        lblLevel.setText(String.valueOf(player.getLevel()));
+    }
+
     private void moveTo(Location newLocation) {
 
-        if (newLocation.getItemRequiredToEnter() != null) {
-            boolean playerHasRequiredItem = false;
-
-            for (InventoryItem ii : player.getInventory()) {
-                if (ii.getDetails().getId() == newLocation.getItemRequiredToEnter().getId()) {
-                    playerHasRequiredItem = true;
-                    break;
-                }
-            }
-
-            if (!playerHasRequiredItem) {
-                txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
-                return;
-            }
+        if (!player.hasRequiredItemToEnterThisLocation(newLocation)) {
+            txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + "");
         }
+
         player.setCurrentLocation(newLocation);
 
         btnNorth.setVisible(newLocation.getLocationToNorth() != null);
@@ -92,53 +86,17 @@ public class Controller {
         lblHitPoints.setText(Integer.toString(player.getCurrentHitPoints()));
 
         if (newLocation.getQuestAvailableHere() != null) {
-            boolean playerAlreadyHasQuest = false;
-            boolean playerAlreadyCompletedQuest = false;
-
-            for (PlayerQuest playerQuest : player.getQuests()) {
-                if (playerQuest.getDetails().getId() == newLocation.getQuestAvailableHere().getId()) {
-                    playerAlreadyHasQuest = true;
-                    if (playerQuest.isCompleted()) {
-                        playerAlreadyCompletedQuest = true;
-                    }
-                }
-            }
+            boolean playerAlreadyHasQuest = player.hasThisQuest(newLocation.getQuestAvailableHere());
+            boolean playerAlreadyCompletedQuest = player.completedThisQuest(newLocation.getQuestAvailableHere());
 
             if (playerAlreadyHasQuest) {
                 if (!playerAlreadyCompletedQuest) {
-                    boolean playerHasAllItemsToCompleteQuest = true;
-
-                    for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
-                        boolean foundItemInPlayersInventory = false;
-
-                        for (InventoryItem ii : player.getInventory()) {
-                            if (ii.getDetails().getId() == qci.getDetails().getId()) {
-                                foundItemInPlayersInventory = true;
-                                if (ii.getQuantity() < qci.getQuantity()) {
-                                    playerHasAllItemsToCompleteQuest = false;
-                                    break;
-                                }
-                                break;
-                            }
-                        }
-
-                        if (!foundItemInPlayersInventory) {
-                            playerHasAllItemsToCompleteQuest = false;
-                            break;
-                        }
-                    }
+                    boolean playerHasAllItemsToCompleteQuest = player.hasAllQuestCompletionItems(newLocation.getQuestAvailableHere());
 
                     if (playerHasAllItemsToCompleteQuest) {
                         txtMessages.appendText("\nYou completed the " + newLocation.getQuestAvailableHere().getName() + "quest.\n");
 
-                        for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
-                            for (InventoryItem ii : player.getInventory()) {
-                                if (ii.getDetails().getId() == qci.getDetails().getId()) {
-                                    ii.setQuantity(ii.getQuantity() - qci.getQuantity());
-                                    break;
-                                }
-                            }
-                        }
+                        player.removeQuestCompletionItems(newLocation.getQuestAvailableHere());
 
                         txtMessages.appendText("You receive \n");
                         txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardExperiencePoints() + " experience points\n");

@@ -64,4 +64,67 @@ public class Player extends LivingCreature {
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
     }
+
+    public boolean hasRequiredItemToEnterThisLocation(Location location) {
+        if (location.getItemRequiredToEnter() == null) {
+            return true;
+        }
+
+        for (InventoryItem ii : inventory) {
+            if (ii.getDetails().getId() == location.getItemRequiredToEnter().getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasThisQuest(Quest quest) {
+        for (PlayerQuest playerQuest : quests) {
+            if (playerQuest.getDetails().getId() == quest.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean completedThisQuest(Quest quest) {
+        for (PlayerQuest playerQuest : quests) {
+            if (playerQuest.getDetails().getId() == quest.getId()) {
+                return playerQuest.isCompleted();
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAllQuestCompletionItems(Quest quest) {
+        for (QuestCompletionItem qci : quest.getQuestCompletionItems()) {
+            boolean foundItemInPlayersInventory = false;
+
+            for (InventoryItem ii : inventory) {
+                if (ii.getDetails().getId() == qci.getDetails().getId()) {
+                    foundItemInPlayersInventory = true;
+
+                    if (ii.getQuantity() < qci.getQuantity()) {
+                        return false;
+                    }
+                }
+            }
+            if (!foundItemInPlayersInventory) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void removeQuestCompletionItems(Quest quest) {
+        for (QuestCompletionItem qci : quest.getQuestCompletionItems()) {
+            for (InventoryItem ii : inventory) {
+                if (ii.getDetails().getId() == qci.getDetails().getId()) {
+                    ii.setQuantity(ii.getQuantity() - qci.getQuantity());
+                    break;
+                }
+            }
+        }
+    }
+
 }
