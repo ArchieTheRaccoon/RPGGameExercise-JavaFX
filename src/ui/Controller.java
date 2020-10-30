@@ -27,7 +27,7 @@ public class Controller {
     public TableView<InventoryTable> tblInventory;
     public TableView<QuestTable> tblQuests;
 
-    private Player player;
+    private Player player = new Player(10,10,20,0,1);
     private Monster currentMonster;
     private World world;
 
@@ -54,8 +54,7 @@ public class Controller {
 
     private void initializeComponents() {
         world = new World();
-        Player player = new Player(10, 10, 20, 0, 1);
-        player.setCurrentLocation(World.locationByID(World.LOCATION_ID_HOME));
+        moveTo(World.locationByID(World.LOCATION_ID_HOME));
         player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
 
 
@@ -107,25 +106,9 @@ public class Controller {
                         player.setExperiencePoints(player.getExperiencePoints() + newLocation.getQuestAvailableHere().getRewardExperiencePoints());
                         player.setGold(player.getGold() + newLocation.getQuestAvailableHere().getRewardGold());
 
-                        boolean addedItemToPlayerInventory = false;
-                        for (InventoryItem ii : player.getInventory()) {
-                            if (ii.getDetails().getId() == newLocation.getQuestAvailableHere().getRewardItem().getId()) {
-                                ii.setQuantity(ii.getQuantity() + 1);
-                                addedItemToPlayerInventory = true;
-                                break;
-                            }
-                        }
+                        player.addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem());
 
-                        if (!addedItemToPlayerInventory) {
-                            player.getInventory().add(new InventoryItem(newLocation.getQuestAvailableHere().getRewardItem(), 1));
-                        }
-
-                        for (PlayerQuest pq : player.getQuests()) {
-                            if (pq.getDetails().getId() == newLocation.getQuestAvailableHere().getId()) {
-                                pq.setCompleted(true);
-                                break;
-                            }
-                        }
+                        player.markQuestCompleted(newLocation.getQuestAvailableHere());
                     }
                 }
             } else {
@@ -163,6 +146,13 @@ public class Controller {
             btnUsePotion.setVisible(true);
         }
 
+        updateInventoryListUI();
+        updateQuestListUI();
+        updateWeaponListUI();
+        updatePotionListUI();
+    }
+
+    private void updateInventoryListUI() {
         tblInventory.getItems().clear();
 
         for (InventoryItem ii : player.getInventory()) {
@@ -170,14 +160,17 @@ public class Controller {
                 tblInventory.getItems().add(new InventoryTable(ii.getDetails().getName(), String.valueOf(ii.getQuantity())));
             }
         }
+    }
 
-
+    private void updateQuestListUI() {
         tblQuests.getItems().clear();
 
         for (PlayerQuest pq : player.getQuests()) {
             tblQuests.getItems().add(new QuestTable(pq.getDetails().getName(), String.valueOf(pq.isCompleted())));
         }
+    }
 
+    private void updateWeaponListUI() {
         List<Weapon> weapons = new ArrayList<>();
 
         for (InventoryItem ii : player.getInventory()) {
@@ -197,7 +190,9 @@ public class Controller {
                 cboWeapons.getItems().add(we.getName());
             }
         }
+    }
 
+    private void updatePotionListUI() {
         List<HealingPotion> healingPotions = new ArrayList<>();
 
         for (InventoryItem ii : player.getInventory()) {

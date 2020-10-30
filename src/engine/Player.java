@@ -127,4 +127,22 @@ public class Player extends LivingCreature {
         }
     }
 
+    public void addItemToInventory(Item itemToAdd) {
+        for (InventoryItem ii : inventory) {
+            if (ii.getDetails().getId() == itemToAdd.getId()) {
+                ii.setQuantity(ii.getQuantity() + 1);
+                return;
+            }
+        }
+        inventory.add(new InventoryItem(itemToAdd, 1));
+    }
+
+    public void markQuestCompleted(Quest quest) {
+        for (PlayerQuest pq : quests) {
+            if (pq.getDetails().getId() == quest.getId()) {
+                pq.setCompleted(true);
+                return;
+            }
+        }
+    }
 }
