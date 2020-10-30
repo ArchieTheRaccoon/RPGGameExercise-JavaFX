@@ -35,7 +35,7 @@ public class Controller {
     public void initialize() {
         Player player = new Player(10, 10, 20, 0, 1);
 
-        moveTo(World.locationByID(World.LOCATION_ID_HOME));
+        player.setCurrentLocation(World.locationByID(World.LOCATION_ID_HOME));
         player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
 
         lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
@@ -45,22 +45,23 @@ public class Controller {
     }
 
     public void clickButtonNorth() {
-        System.out.println("Boi");
+        moveTo(player.getCurrentLocation().getLocationToNorth());
     }
 
     public void clickButtonEast() {
-        System.out.println("Boi");
+        moveTo(player.getCurrentLocation().getLocationToEast());
     }
 
     public void clickButtonSouth() {
-        System.out.println("Boi");
+        moveTo(player.getCurrentLocation().getLocationToSouth());
     }
 
     public void clickButtonWest() {
-        System.out.println("Boi");
+        moveTo(player.getCurrentLocation().getLocationToWest());
     }
 
     private void moveTo(Location newLocation) {
+
         if (newLocation.getItemRequiredToEnter() != null) {
             boolean playerHasRequiredItem = false;
 
@@ -208,8 +209,7 @@ public class Controller {
 
         for (InventoryItem ii : player.getInventory()) {
             if (ii.getQuantity() > 0) {
-                InventoryTable itemsTable = new InventoryTable(ii.getDetails().getName(), ii.getQuantity());
-                tblInventory.getItems().add(itemsTable);
+                tblInventory.getItems().add(new InventoryTable(ii.getDetails().getName(), String.valueOf(ii.getQuantity())));
             }
         }
 
@@ -217,8 +217,7 @@ public class Controller {
         tblQuests.getItems().clear();
 
         for (PlayerQuest pq : player.getQuests()) {
-            QuestTable questTable = new QuestTable(pq.getDetails().getName(), String.valueOf(pq.isCompleted()));
-            tblQuests.getItems().add(questTable);
+            tblQuests.getItems().add(new QuestTable(pq.getDetails().getName(), String.valueOf(pq.isCompleted())));
         }
 
         List<Weapon> weapons = new ArrayList<>();

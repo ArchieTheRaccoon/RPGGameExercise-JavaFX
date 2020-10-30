@@ -1,10 +1,9 @@
 package engine;
 
 public class InventoryTable {
-    private String itemName;
-    private int itemAmount;
+    private String itemName, itemAmount;
 
-    public InventoryTable(String itemName, Integer itemAmount) {
+    public InventoryTable(String itemName, String itemAmount) {
         this.itemName = itemName;
         this.itemAmount = itemAmount;
     }
@@ -17,11 +16,11 @@ public class InventoryTable {
         this.itemName = itemName;
     }
 
-    public int getItemAmount() {
+    public String getItemAmount() {
         return itemAmount;
     }
 
-    public void setItemAmount(int itemAmount) {
+    public void setItemAmount(String itemAmount) {
         this.itemAmount = itemAmount;
     }
 }
