@@ -64,22 +64,11 @@ public class Player extends LivingCreature {
         if (location.getItemRequiredToEnter() == null) {
             return true;
         }
-
-        for (InventoryItem ii : inventory) {
-            if (ii.getDetails().getId() == location.getItemRequiredToEnter().getId()) {
-                return true;
-            }
-        }
-        return false;
+        return inventory.stream().anyMatch(ii -> ii.getDetails().getId() == location.getItemRequiredToEnter().getId());
     }
 
     public boolean hasThisQuest(Quest quest) {
-        for (PlayerQuest playerQuest : quests) {
-            if (playerQuest.getDetails().getId() == quest.getId()) {
-                return true;
-            }
-        }
-        return false;
+        return quests.stream().anyMatch(playerQuest -> playerQuest.getDetails().getId() == quest.getId());
     }
 
     public boolean completedThisQuest(Quest quest) {
@@ -93,18 +82,8 @@ public class Player extends LivingCreature {
 
     public boolean hasAllQuestCompletionItems(Quest quest) {
         for (QuestCompletionItem qci : quest.getQuestCompletionItems()) {
-            boolean foundItemInPlayersInventory = false;
-
-            for (InventoryItem ii : inventory) {
-                if (ii.getDetails().getId() == qci.getDetails().getId()) {
-                    foundItemInPlayersInventory = true;
-
-                    if (ii.getQuantity() < qci.getQuantity()) {
-                        return false;
-                    }
-                }
-            }
-            if (!foundItemInPlayersInventory) {
+            if (!inventory.stream().anyMatch(ii -> ii.getDetails().getId() == qci.getDetails().getId()
+                    && ii.getQuantity() >= qci.getQuantity())) {
                 return false;
             }
         }
