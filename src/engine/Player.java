@@ -8,11 +8,10 @@ public class Player extends LivingCreature {
     private ArrayList<PlayerQuest> quests;
     private Location currentLocation;
 
-    public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints, int level) {
+    public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) {
         super(currentHitPoints, maximumHitPoints);
         this.gold = gold;
         this.experiencePoints = experiencePoints;
-        this.level = level;
         inventory = new ArrayList<InventoryItem>();
         quests = new ArrayList<PlayerQuest>();
     }
@@ -34,11 +33,7 @@ public class Player extends LivingCreature {
     }
 
     public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
+        return (experiencePoints / 100) + 1;
     }
 
     public ArrayList<InventoryItem> getInventory() {

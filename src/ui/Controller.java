@@ -36,7 +36,7 @@ public class Controller {
 
     private Monster currentMonster;
     private World world;
-    public Player player = new Player(10,10,20,0,1);
+    public Player player = new Player(10,10,20,0);
 
 
     public void initialize() {
@@ -100,7 +100,7 @@ public class Controller {
 
         player.setCurrentHitPoints(player.getMaximumHitPoints());
 
-        lblHitPoints.setText(Integer.toString(player.getCurrentHitPoints()));
+        updateLists();
 
         if (newLocation.getQuestAvailableHere() != null) {
             boolean playerAlreadyHasQuest = player.hasThisQuest(newLocation.getQuestAvailableHere());
@@ -230,18 +230,8 @@ public class Controller {
 
             moveTo(player.getCurrentLocation());
         } else {
-            int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
-
-            txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
-
-            player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
+            damageFromMonster();
             updateLists();
-
-            if (player.getCurrentHitPoints() <= 0) {
-                txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
-
-                moveTo(World.locationByID(World.LOCATION_ID_HOME));
-            }
         }
     }
 
@@ -272,19 +262,23 @@ public class Controller {
 
         txtMessages.appendText("You drink a " + potion.getName() + ".\n");
 
+        damageFromMonster();
+        updateLists();
+    }
+
+    private void damageFromMonster() {
         int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
 
         txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
 
         player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
+        updateLists();
 
         if (player.getCurrentHitPoints() <= 0) {
             txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
 
             moveTo(World.locationByID(World.LOCATION_ID_HOME));
         }
-
-        updateLists();
     }
 
     private void updateInventoryListUI() {
