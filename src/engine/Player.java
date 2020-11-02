@@ -92,31 +92,26 @@ public class Player extends LivingCreature {
 
     public void removeQuestCompletionItems(Quest quest) {
         for (QuestCompletionItem qci : quest.getQuestCompletionItems()) {
-            for (InventoryItem ii : inventory) {
-                if (ii.getDetails().getId() == qci.getDetails().getId()) {
-                    ii.setQuantity(ii.getQuantity() - qci.getQuantity());
-                    break;
-                }
+            InventoryItem item = inventory.stream().filter(ii -> ii.getDetails().getId() == qci.getDetails().getId()).findFirst().orElse(null);
+            if (item != null) {
+                item.setQuantity(item.getQuantity() - qci.getQuantity());
             }
         }
     }
 
     public void addItemToInventory(Item itemToAdd) {
-        for (InventoryItem ii : inventory) {
-            if (ii.getDetails().getId() == itemToAdd.getId()) {
-                ii.setQuantity(ii.getQuantity() + 1);
-                return;
-            }
+        InventoryItem item = inventory.stream().filter(ii -> ii.getDetails().getId() == itemToAdd.getId()).findFirst().orElse(null);
+        if (item == null) {
+            inventory.add(new InventoryItem(itemToAdd, 1));
+        } else {
+            item.setQuantity(item.getQuantity() + 1);
         }
-        inventory.add(new InventoryItem(itemToAdd, 1));
     }
 
     public void markQuestCompleted(Quest quest) {
-        for (PlayerQuest pq : quests) {
-            if (pq.getDetails().getId() == quest.getId()) {
-                pq.setCompleted(true);
-                return;
-            }
+        PlayerQuest playerQuest = quests.stream().filter(pq -> pq.getDetails().getId() == quest.getId()).findFirst().orElse(null);
+        if (playerQuest != null) {
+            playerQuest.setCompleted(true);
         }
     }
 }
