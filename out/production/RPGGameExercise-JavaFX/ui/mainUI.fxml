@@ -52,11 +52,11 @@
          <font>
             <Font name="Comic Sans MS Bold" size="13.0" />
          </font></Label>
-        <Button fx:id="btnUseWeapon" layoutX="620.0" layoutY="559.0" mnemonicParsing="false" text="Use">
+        <Button fx:id="btnUseWeapon" layoutX="620.0" layoutY="559.0" mnemonicParsing="false" onAction="#clickButtonUseWeapon" text="Use">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Button>
-        <Button fx:id="btnUsePotion" layoutX="620.0" layoutY="593.0" mnemonicParsing="false" text="Use">
+        <Button fx:id="btnUsePotion" layoutX="620.0" layoutY="593.0" mnemonicParsing="false" onAction="#clickButtonUsePotion" text="Use">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Button>

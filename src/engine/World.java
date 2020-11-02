@@ -133,7 +133,7 @@ public class World {
         alchemistHut.setLocationToSouth(townSquare);
         alchemistHut.setLocationToNorth(alchemistsGarden);
 
-        alchemistsGarden.setLocationToEast(alchemistHut);
+        alchemistsGarden.setLocationToSouth(alchemistHut);
 
         guardPost.setLocationToEast(bridge);
         guardPost.setLocationToWest(townSquare);

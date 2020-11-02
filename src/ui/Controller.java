@@ -34,9 +34,9 @@ public class Controller {
     public TableColumn<QuestTable, String> tblclmnQuestName;
     public TableColumn<QuestTable, String> tblclmnDone;
 
-    private Player player = new Player(10,10,20,0,1);
     private Monster currentMonster;
     private World world;
+    public Player player = new Player(10,10,20,0,1);
 
 
     public void initialize() {
@@ -60,16 +60,20 @@ public class Controller {
         moveTo(player.getCurrentLocation().getLocationToWest());
     }
 
+    public void clickButtonUseWeapon() {
+        useWeapon();
+    }
+
+    public void clickButtonUsePotion() {
+        usePotion();
+    }
+
     private void initializeComponents() {
         world = new World();
         moveTo(World.locationByID(World.LOCATION_ID_HOME));
         player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
 
-
-        lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
-        lblGold.setText(String.valueOf(player.getGold()));
-        lblExperience.setText(String.valueOf(player.getExperiencePoints()));
-        lblLevel.setText(String.valueOf(player.getLevel()));
+        updateLists();
 
         tblclmnItemName.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantity.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
@@ -166,6 +170,123 @@ public class Controller {
         updatePotionListUI();
     }
 
+    private void useWeapon() {
+        Weapon currentWeapon = null;
+
+        for (InventoryItem ii : player.getInventory()) {
+            if (ii.getDetails() instanceof Weapon) {
+                if (ii.getQuantity() > 0) {
+                    if (ii.getDetails().getName().equals(cboWeapons.getSelectionModel().getSelectedItem())) {
+                        currentWeapon = (Weapon) ii.getDetails();
+                    }
+                }
+            }
+        }
+
+        int damageToMonster = RandomNumberGenerator.numberBetween(currentWeapon.getMinimumDamage(), currentWeapon.getMaximumDamage());
+
+        currentMonster.setCurrentHitPoints(currentMonster.getCurrentHitPoints() - damageToMonster);
+
+        txtMessages.appendText("Your hit the " + currentMonster.getName() + " for " + damageToMonster + " points.\n");
+
+        if (currentMonster.getCurrentHitPoints() <= 0) {
+            txtMessages.appendText("\nYou defeated the " + currentMonster.getName() + ".\n");
+
+            player.setExperiencePoints(player.getExperiencePoints() + currentMonster.getRewardExperiencePoints());
+            txtMessages.appendText("You receive " + currentMonster.getRewardExperiencePoints() + " experience points.\n");
+
+            player.setGold(player.getGold() + currentMonster.getRewardGold());
+            txtMessages.appendText("You receive " + currentMonster.getRewardGold() + " gold.\n");
+
+            List<InventoryItem> lootedItems = new ArrayList<InventoryItem>();
+
+            for (LootItem lootItem : currentMonster.getLootTable()) {
+                if (RandomNumberGenerator.numberBetween(1, 100) <= lootItem.getDropPercentage()) {
+                    lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
+                }
+            }
+
+            if (lootedItems.size() == 0) {
+                for (LootItem lootItem : currentMonster.getLootTable()) {
+                    if (lootItem.isDefaultItem()) {
+                        lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
+                    }
+                }
+            }
+
+            for (InventoryItem ii : lootedItems) {
+                player.addItemToInventory(ii.getDetails());
+
+                if (ii.getQuantity() == 1) {
+                    txtMessages.appendText("You loot " + ii.getQuantity() + " " + ii.getDetails().getName() + ".\n");
+                } else {
+                    txtMessages.appendText("You loot " + ii.getQuantity() + " " + ii.getDetails().getNamePlural() + ".\n");
+                }
+            }
+
+            updateLists();
+
+            txtMessages.appendText("\n");
+
+            moveTo(player.getCurrentLocation());
+        } else {
+            int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
+
+            txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
+
+            player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
+            updateLists();
+
+            if (player.getCurrentHitPoints() <= 0) {
+                txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
+
+                moveTo(World.locationByID(World.LOCATION_ID_HOME));
+            }
+        }
+    }
+
+    private void usePotion() {
+        HealingPotion potion = null;
+        for (InventoryItem ii : player.getInventory()) {
+            if (ii.getDetails() instanceof HealingPotion) {
+                if (ii.getQuantity() > 0) {
+                    if (ii.getDetails().getName().equals(cboPotions.getSelectionModel().getSelectedItem())) {
+                        potion = (HealingPotion) ii.getDetails();
+                    }
+                }
+            }
+        }
+
+        player.setCurrentHitPoints(player.getCurrentHitPoints() + potion.getAmountToHeal());
+
+        if (player.getCurrentHitPoints() > player.getMaximumHitPoints()) {
+            player.setCurrentHitPoints(player.getMaximumHitPoints());
+        }
+
+        for (InventoryItem ii : player.getInventory()) {
+            if (ii.getDetails().getId() == potion.getId()) {
+                ii.setQuantity(ii.getQuantity() - 1);
+                break;
+            }
+        }
+
+        txtMessages.appendText("You drink a " + potion.getName() + ".\n");
+
+        int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
+
+        txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
+
+        player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
+
+        if (player.getCurrentHitPoints() <= 0) {
+            txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
+
+            moveTo(World.locationByID(World.LOCATION_ID_HOME));
+        }
+
+        updateLists();
+    }
+
     private void updateInventoryListUI() {
         ObservableList<InventoryTable> shortInventoryList = FXCollections.observableArrayList();
         tblInventory.getItems().clear();
@@ -233,5 +354,17 @@ public class Controller {
                 cboPotions.getItems().add(hp.getName());
             }
         }
+    }
+
+    private void updateLists() {
+        lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
+        lblGold.setText(String.valueOf(player.getGold()));
+        lblExperience.setText(String.valueOf(player.getExperiencePoints()));
+        lblLevel.setText(String.valueOf(player.getLevel()));
+
+        updateInventoryListUI();
+        updateWeaponListUI();
+        updateQuestListUI();
+        updatePotionListUI();
     }
 }
