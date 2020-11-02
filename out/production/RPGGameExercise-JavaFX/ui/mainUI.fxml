@@ -64,7 +64,7 @@
         <Button fx:id="btnEast" layoutX="573.0" layoutY="457.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonEast" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30;" text="East" />
         <Button fx:id="btnSouth" layoutX="493.0" layoutY="487.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonSouth" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30;" text="South" />
         <Button fx:id="btnWest" layoutX="412.0" layoutY="457.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonWest" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30;" text="West" />
-      <TextArea fx:id="txtLocation" editable="false" layoutX="347.0" layoutY="19.0" prefHeight="105.0" prefWidth="360.0" />
+      <TextArea fx:id="txtLocation" editable="false" layoutX="347.0" layoutY="19.0" prefHeight="105.0" prefWidth="360.0" wrapText="true" />
       <TextArea fx:id="txtMessages" editable="false" layoutX="347.0" layoutY="130.0" prefHeight="286.0" prefWidth="360.0" wrapText="true" />
         <TableView fx:id="tblInventory" layoutX="16.0" layoutY="130.0" prefHeight="309.0" prefWidth="312.0">
             <columns>

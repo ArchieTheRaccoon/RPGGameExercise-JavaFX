@@ -80,7 +80,8 @@ public class Controller {
     private void moveTo(Location newLocation) {
 
         if (!player.hasRequiredItemToEnterThisLocation(newLocation)) {
-            txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + "");
+            txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
+            return;
         }
 
         player.setCurrentLocation(newLocation);
