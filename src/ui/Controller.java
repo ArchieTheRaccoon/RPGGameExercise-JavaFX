@@ -6,6 +6,13 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +40,13 @@ public class Controller {
     public TableColumn<InventoryTable, String> tblclmnQuantity;
     public TableColumn<QuestTable, String> tblclmnQuestName;
     public TableColumn<QuestTable, String> tblclmnDone;
+    public Button btnLoadData;
+    public Button btnSaveData;
 
     private Monster currentMonster;
     private World world;
     public Player player = new Player(10,10,20,0);
+    private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
 
 
     public void initialize() {
@@ -70,8 +80,8 @@ public class Controller {
 
     private void initializeComponents() {
         world = new World();
+        player = Player.createDefaultPlayer();
         moveTo(World.locationByID(World.LOCATION_ID_HOME));
-        player.getInventory().add(new InventoryItem(World.itemByID(World.ITEM_ID_RUSTY_SWORD), 1));
 
         updateLists();
 
@@ -360,5 +370,29 @@ public class Controller {
         updateWeaponListUI();
         updateQuestListUI();
         updatePotionListUI();
+    }
+
+    public void saveDataFile() {
+        System.out.println("Bitch");
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            DOMSource xmlPlayerInformation = player.toXmlDomSource();
+            StreamResult streamResult = new StreamResult(new File(PLAYER_DATA_FILE_NAME));
+
+            transformer.transform(xmlPlayerInformation, streamResult);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    public void loadDataFile() {
+        if (new File(PLAYER_DATA_FILE_NAME).isFile()) {
+            player = Player.createPlayerFromXml(PLAYER_DATA_FILE_NAME);
+        } else {
+            player = Player.createDefaultPlayer();
+        }
+
+        moveTo(player.getCurrentLocation());
+        updateLists();
     }
 }
