@@ -327,9 +327,18 @@ public class Controller {
             cboWeapons.setVisible(false);
             btnUseWeapon.setVisible(false);
         } else {
+            int tmpCounter = 0;
+            int currentWeaponIndex = 0;
+
             for (Weapon we : weapons) {
+                if (player.getCurrentWeapon() != null && we.getId() == player.getCurrentWeapon().getId()) {
+                    currentWeaponIndex = tmpCounter;
+                }
+
                 cboWeapons.getItems().add(we.getName());
+                tmpCounter++;
             }
+            cboWeapons.getSelectionModel().select(currentWeaponIndex);
         }
     }
 
@@ -369,7 +378,6 @@ public class Controller {
     }
 
     public void saveDataFile() {
-        System.out.println("Bitch");
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             DOMSource xmlPlayerInformation = player.toXmlDomSource();
@@ -390,5 +398,15 @@ public class Controller {
 
         moveTo(player.getCurrentLocation());
         updateLists();
+    }
+
+    public void saveCurrentWeapon() {
+        String newWeaponName = cboWeapons.getSelectionModel().getSelectedItem();
+
+        for (InventoryItem ii : player.getInventory()) {
+            if (ii.getDetails() instanceof Weapon && ii.getDetails().getName().equals(newWeaponName)) {
+                player.setCurrentWeapon((Weapon) ii.getDetails());
+            }
+        }
     }
 }

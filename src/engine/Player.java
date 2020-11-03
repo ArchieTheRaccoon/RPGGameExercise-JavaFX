@@ -2,13 +2,9 @@ package engine;
 
 import java.io.File;
 import java.util.ArrayList;
-import javax.xml.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 
@@ -17,6 +13,7 @@ public class Player extends LivingCreature {
     private ArrayList<InventoryItem> inventory;
     private ArrayList<PlayerQuest> quests;
     private Location currentLocation;
+    private Weapon currentWeapon;
 
     public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) {
         super(currentHitPoints, maximumHitPoints);
@@ -48,6 +45,11 @@ public class Player extends LivingCreature {
 
             Player player = new Player(currentHitPoints, maximumHitPoints, gold, experiencePoints);
             player.setCurrentLocation(World.locationByID(currentLocation));
+
+            if (doc.getElementById("currentWeapon") != null) {
+                int currentWeapon = Integer.valueOf(doc.getElementsByTagName("currentWeapon").item(0).getTextContent());
+                player.setCurrentWeapon((Weapon) World.itemByID(currentWeapon));
+            }
 
             NodeList iiNodeList = doc.getElementsByTagName("inventoryItem");
             NodeList pqNodeList = doc.getElementsByTagName("playerQuest");
@@ -211,6 +213,12 @@ public class Player extends LivingCreature {
             currentLocationValue.appendChild(playerData.createTextNode(String.valueOf(getCurrentLocation().getId())));
             stats.appendChild(currentLocationValue);
 
+            if(currentWeapon != null) {
+                Element currentWeaponValue = playerData.createElement("currentWeapon");
+                currentWeaponValue.appendChild(playerData.createTextNode(String.valueOf(getCurrentWeapon().getId())));
+                stats.appendChild(currentWeaponValue);
+            }
+
             //Create "inventoryItems" child node to hold each inventoryItem node
             Element inventoryItems = playerData.createElement("inventoryItems");
             player.appendChild(inventoryItems);
@@ -256,5 +264,13 @@ public class Player extends LivingCreature {
             //Something went wrong
             return null;
         }
+    }
+
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+
+    public void setCurrentWeapon(Weapon currentWeapon) {
+        this.currentWeapon = currentWeapon;
     }
 }
