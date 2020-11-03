@@ -1,6 +1,6 @@
 package engine;
 
-public class LivingCreature {
+public class LivingCreature extends ObservableGamePart {
     private int currentHitPoints, maximumHitPoints;
 
     public LivingCreature(int currentHitPoints, int maximumHitPoints) {
@@ -13,7 +13,9 @@ public class LivingCreature {
     }
 
     public void setCurrentHitPoints(int currentHitPoints) {
+        int oldCurrentHitPoints = this.currentHitPoints;
         this.currentHitPoints = currentHitPoints;
+        firePropertyChange("currentHitPoints", oldCurrentHitPoints, this.currentHitPoints);
     }
 
     public int getMaximumHitPoints() {
