@@ -5,13 +5,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +20,15 @@ public class Controller {
 
     public ComboBox<String> cboWeapons;
     public ComboBox<String> cboPotions;
+
     public Button btnUseWeapon;
     public Button btnUsePotion;
-
     public Button btnNorth;
     public Button btnEast;
     public Button btnSouth;
     public Button btnWest;
+    public Button btnLoadData;
+    public Button btnSaveData;
 
     public TextArea txtLocation;
     public TextArea txtMessages;
@@ -40,8 +38,6 @@ public class Controller {
     public TableColumn<InventoryTable, String> tblclmnQuantity;
     public TableColumn<QuestTable, String> tblclmnQuestName;
     public TableColumn<QuestTable, String> tblclmnDone;
-    public Button btnLoadData;
-    public Button btnSaveData;
 
     private Monster currentMonster;
     private World world;
