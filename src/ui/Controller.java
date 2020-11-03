@@ -168,6 +168,11 @@ public class Controller {
             cboPotions.setVisible(true);
             btnUseWeapon.setVisible(true);
             btnUsePotion.setVisible(true);
+        } else {
+            cboWeapons.setVisible(false);
+            cboPotions.setVisible(false);
+            btnUseWeapon.setVisible(false);
+            btnUsePotion.setVisible(false);
         }
 
         updateInventoryListUI();
