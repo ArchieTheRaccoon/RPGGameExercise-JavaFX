@@ -1,6 +1,7 @@
 package ui;
 
 import engine.*;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -47,7 +48,8 @@ public class Controller {
 
     public void initialize() {
         initializeComponents();
-        updateInventoryListUI();
+
+        updateLists();
     }
 
     public void clickButtonNorth() {
@@ -76,7 +78,10 @@ public class Controller {
 
     private void initializeComponents() {
         world = new World();
+
         player = Player.createDefaultPlayer();
+        initializeObservableLabels();
+
         moveTo(World.locationByID(World.LOCATION_ID_HOME));
 
         updateLists();
@@ -105,8 +110,6 @@ public class Controller {
         txtLocation.appendText(newLocation.getDescription() + "\n");
 
         player.setCurrentHitPoints(player.getMaximumHitPoints());
-
-        updateLists();
 
         if (newLocation.getQuestAvailableHere() != null) {
             boolean playerAlreadyHasQuest = player.hasThisQuest(newLocation.getQuestAvailableHere());
@@ -371,11 +374,6 @@ public class Controller {
     }
 
     private void updateLists() {
-        lblHitPoints.setText(String.valueOf(player.getCurrentHitPoints()));
-        lblGold.setText(String.valueOf(player.getGold()));
-        lblExperience.setText(String.valueOf(player.getExperiencePoints()));
-        lblLevel.setText(String.valueOf(player.getLevel()));
-
         updateInventoryListUI();
         updateWeaponListUI();
         updateQuestListUI();
@@ -401,8 +399,9 @@ public class Controller {
             player = Player.createDefaultPlayer();
         }
 
+        initializeObservableLabels();
+
         moveTo(player.getCurrentLocation());
-        updateLists();
     }
 
     public void saveCurrentWeapon() {
@@ -413,5 +412,12 @@ public class Controller {
                 player.setCurrentWeapon((Weapon) ii.getDetails());
             }
         }
+    }
+
+    public void initializeObservableLabels() {
+        lblGold.textProperty().bind(player.goldProperty().asString());
+        lblHitPoints.textProperty().bind(player.currentHitPointsProperty().asString());
+        lblExperience.textProperty().bind(player.experiencePointsProperty().asString());
+        lblLevel.textProperty().bind(player.levelProperty().asString());
     }
 }

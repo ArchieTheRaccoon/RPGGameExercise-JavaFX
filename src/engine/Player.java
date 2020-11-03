@@ -6,10 +6,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import org.w3c.dom.*;
 
 public class Player extends LivingCreature {
-    private int gold, experiencePoints, level;
+    private IntegerProperty gold = new SimpleIntegerProperty();
+    private IntegerProperty experiencePoints = new SimpleIntegerProperty();
+    private IntegerProperty level = new SimpleIntegerProperty(1);
     private ArrayList<InventoryItem> inventory;
     private ArrayList<PlayerQuest> quests;
     private Location currentLocation;
@@ -17,8 +21,8 @@ public class Player extends LivingCreature {
 
     public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) {
         super(currentHitPoints, maximumHitPoints);
-        this.gold = gold;
-        this.experiencePoints = experiencePoints;
+        setGold(gold);
+        setExperiencePoints(experiencePoints);
         setInventory(new ArrayList<InventoryItem>());
         setQuests(new ArrayList<PlayerQuest>());
     }
@@ -82,28 +86,44 @@ public class Player extends LivingCreature {
     }
 
     public void addExperiencePoints(int experiencePointsToAdd) {
-        setExperiencePoints(experiencePoints + experiencePointsToAdd);
+        this.experiencePoints.set(getExperiencePoints() + experiencePointsToAdd);
         setMaximumHitPoints(getLevel() * 10);
     }
 
     public int getGold() {
+        return gold.get();
+    }
+
+    public IntegerProperty goldProperty() {
         return gold;
     }
 
     public void setGold(int gold) {
-        this.gold = gold;
+        this.gold.set(gold);
     }
 
     public int getExperiencePoints() {
+        return experiencePoints.get();
+    }
+
+    public IntegerProperty experiencePointsProperty() {
         return experiencePoints;
     }
 
-    private void setExperiencePoints(int experiencePoints) {
-        this.experiencePoints = experiencePoints;
+    public void setExperiencePoints(int experiencePoints) {
+        this.experiencePoints.set(experiencePoints);
     }
 
     public int getLevel() {
-        return (experiencePoints / 100) + 1;
+        return (experiencePoints.get() / 100) + 1;
+    }
+
+    public IntegerProperty levelProperty() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level.set(level);
     }
 
     public ArrayList<InventoryItem> getInventory() {
