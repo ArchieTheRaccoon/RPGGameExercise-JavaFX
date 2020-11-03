@@ -81,6 +81,11 @@ public class Player extends LivingCreature {
         }
     }
 
+    public void addExperiencePoints(int experiencePointsToAdd) {
+        setExperiencePoints(experiencePoints + experiencePointsToAdd);
+        setMaximumHitPoints(getLevel() * 10);
+    }
+
     public int getGold() {
         return gold;
     }
@@ -93,7 +98,7 @@ public class Player extends LivingCreature {
         return experiencePoints;
     }
 
-    public void setExperiencePoints(int experiencePoints) {
+    private void setExperiencePoints(int experiencePoints) {
         this.experiencePoints = experiencePoints;
     }
 

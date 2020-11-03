@@ -127,7 +127,7 @@ public class Controller {
                         txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardItem().getName() + "\n");
                         txtMessages.appendText("\n");
 
-                        player.setExperiencePoints(player.getExperiencePoints() + newLocation.getQuestAvailableHere().getRewardExperiencePoints());
+                        player.addExperiencePoints(newLocation.getQuestAvailableHere().getRewardExperiencePoints());
                         player.setGold(player.getGold() + newLocation.getQuestAvailableHere().getRewardGold());
 
                         player.addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem());
@@ -198,7 +198,7 @@ public class Controller {
         if (currentMonster.getCurrentHitPoints() <= 0) {
             txtMessages.appendText("\nYou defeated the " + currentMonster.getName() + ".\n");
 
-            player.setExperiencePoints(player.getExperiencePoints() + currentMonster.getRewardExperiencePoints());
+            player.addExperiencePoints(currentMonster.getRewardExperiencePoints());
             txtMessages.appendText("You receive " + currentMonster.getRewardExperiencePoints() + " experience points.\n");
 
             player.setGold(player.getGold() + currentMonster.getRewardGold());
