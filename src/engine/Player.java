@@ -88,6 +88,7 @@ public class Player extends LivingCreature {
     public void addExperiencePoints(int experiencePointsToAdd) {
         this.experiencePoints.set(getExperiencePoints() + experiencePointsToAdd);
         setMaximumHitPoints(getLevel() * 10);
+        setLevel((experiencePoints.get() / 100) + 1);
     }
 
     public int getGold() {
@@ -95,6 +96,7 @@ public class Player extends LivingCreature {
     }
 
     public IntegerProperty goldProperty() {
+        addExperiencePoints(0);
         return gold;
     }
 
@@ -115,7 +117,7 @@ public class Player extends LivingCreature {
     }
 
     public int getLevel() {
-        return (experiencePoints.get() / 100) + 1;
+        return ((experiencePoints.get() / 100) + 1);
     }
 
     public IntegerProperty levelProperty() {
