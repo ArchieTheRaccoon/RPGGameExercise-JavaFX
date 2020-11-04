@@ -80,13 +80,14 @@ public class Controller implements GameObserver {
         initializeObservableLabels();
 
         player.addObserver(this);
-        updateGUI(Event.UPDATE_ALL, null);
         moveTo(World.locationByID(World.LOCATION_ID_HOME));
 
         tblclmnItemName.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantity.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
         tblclmnQuestName.setCellValueFactory(new PropertyValueFactory<>("NameQuest"));
         tblclmnDone.setCellValueFactory(new PropertyValueFactory<>("IsCompleted"));
+
+        updateGUI(Event.UPDATE_ALL, null);
     }
 
     private void moveTo(Location newLocation) {
@@ -165,13 +166,13 @@ public class Controller implements GameObserver {
             }
 
             cboWeapons.setVisible(player.getWeapons().size() > 0);
-            //cboPotions.setVisible(player.getPotions().size() > 0);
+            cboPotions.setVisible(player.getPotions().size() > 0);
             btnUseWeapon.setVisible(player.getWeapons().size() > 0);
-            //btnUsePotion.setVisible(player.getPotions().size() > 0);
+            btnUsePotion.setVisible(player.getPotions().size() > 0);
         } else {
-            //cboPotions.setVisible(false);
+            cboPotions.setVisible(false);
             cboWeapons.setVisible(false);
-            //btnUsePotion.setVisible(false);
+            btnUsePotion.setVisible(false);
             btnUseWeapon.setVisible(false);
         }
 
@@ -237,6 +238,8 @@ public class Controller implements GameObserver {
         } else {
             damageFromMonster();
         }
+
+        updateGUI(Event.UPDATE_ALL, null);
     }
 
     private void usePotion() {
@@ -384,6 +387,8 @@ public class Controller implements GameObserver {
         } else {
             player = Player.createDefaultPlayer();
         }
+
+        updateGUI(Event.UPDATE_ALL, null);
 
         initializeObservableLabels();
 

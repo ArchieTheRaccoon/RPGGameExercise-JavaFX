@@ -10,6 +10,7 @@ import javax.xml.transform.dom.DOMSource;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.w3c.dom.*;
+import ui.Controller;
 import ui.GameObserver;
 
 public class Player extends LivingCreature {
