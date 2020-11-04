@@ -3,12 +3,17 @@ package ui;
 import engine.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +97,7 @@ public class Controller implements GameObserver {
     }
 
     private void moveTo(Location newLocation) {
+        btnTrade.setVisible(true);
 
         if (!player.hasRequiredItemToEnterThisLocation(newLocation)) {
             txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
@@ -431,6 +437,20 @@ public class Controller implements GameObserver {
             case UPDATE_ALL:
                 updateLists();
                 btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
+        }
+    }
+
+    public void clickTrade() throws IOException {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
+
+            Scene scene = new Scene(fxmlLoader.load(), 544, 349);
+            Stage secondStage = new Stage();
+            secondStage.setTitle("Trade");
+            secondStage.setScene(scene);
+            secondStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
