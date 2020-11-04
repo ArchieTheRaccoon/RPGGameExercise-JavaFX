@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.ArrayList;
-import ui.GameObserver.Event;
 
 public class Vendor extends ObservableGamePart {
     private String name;

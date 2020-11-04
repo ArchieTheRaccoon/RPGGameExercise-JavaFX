@@ -97,7 +97,6 @@ public class Controller implements GameObserver {
     }
 
     private void moveTo(Location newLocation) {
-        btnTrade.setVisible(true);
 
         if (!player.hasRequiredItemToEnterThisLocation(newLocation)) {
             txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
@@ -105,6 +104,8 @@ public class Controller implements GameObserver {
         }
 
         player.setCurrentLocation(newLocation);
+
+        btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
 
         btnNorth.setVisible(newLocation.getLocationToNorth() != null);
         btnEast.setVisible(newLocation.getLocationToEast() != null);
@@ -436,7 +437,6 @@ public class Controller implements GameObserver {
                 updateWeaponListUI();
             case UPDATE_ALL:
                 updateLists();
-                btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
         }
     }
 
