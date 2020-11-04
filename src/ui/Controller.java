@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Controller {
+public class Controller implements GameObserver {
     public Label lblHitPoints;
     public Label lblGold;
     public Label lblExperience;
@@ -47,8 +47,6 @@ public class Controller {
 
     public void initialize() {
         initializeComponents();
-
-        updateLists();
     }
 
     public void clickButtonNorth() {
@@ -81,9 +79,9 @@ public class Controller {
         player = Player.createDefaultPlayer();
         initializeObservableLabels();
 
+        player.addObserver(this);
+        updateGUI(Event.UPDATE_ALL, null);
         moveTo(World.locationByID(World.LOCATION_ID_HOME));
-
-        updateLists();
 
         tblclmnItemName.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantity.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
@@ -132,7 +130,7 @@ public class Controller {
                         player.addExperiencePoints(newLocation.getQuestAvailableHere().getRewardExperiencePoints());
                         player.setGold(player.getGold() + newLocation.getQuestAvailableHere().getRewardGold());
 
-                        player.addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem());
+                        player.addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem(), 1);
 
                         player.markQuestCompleted(newLocation.getQuestAvailableHere());
                     }
@@ -150,7 +148,7 @@ public class Controller {
                 }
                 txtMessages.appendText("\n");
 
-                player.getQuests().add(new PlayerQuest(newLocation.getQuestAvailableHere()));
+                player.addQuestToQuestsList(newLocation.getQuestAvailableHere());
             }
         }
 
@@ -166,21 +164,17 @@ public class Controller {
                 currentMonster.getLootTable().add(lootItem);
             }
 
-            cboWeapons.setVisible(true);
-            cboPotions.setVisible(true);
-            btnUseWeapon.setVisible(true);
-            btnUsePotion.setVisible(true);
+            cboWeapons.setVisible(player.getWeapons().size() > 0);
+            //cboPotions.setVisible(player.getPotions().size() > 0);
+            btnUseWeapon.setVisible(player.getWeapons().size() > 0);
+            //btnUsePotion.setVisible(player.getPotions().size() > 0);
         } else {
+            //cboPotions.setVisible(false);
             cboWeapons.setVisible(false);
-            cboPotions.setVisible(false);
+            //btnUsePotion.setVisible(false);
             btnUseWeapon.setVisible(false);
-            btnUsePotion.setVisible(false);
         }
 
-        updateInventoryListUI();
-        updateQuestListUI();
-        updateWeaponListUI();
-        updatePotionListUI();
     }
 
     private void useWeapon() {
@@ -228,7 +222,7 @@ public class Controller {
             }
 
             for (InventoryItem ii : lootedItems) {
-                player.addItemToInventory(ii.getDetails());
+                player.addItemToInventory(ii.getDetails(), ii.getQuantity());
 
                 if (ii.getQuantity() == 1) {
                     txtMessages.appendText("You loot " + ii.getQuantity() + " " + ii.getDetails().getName() + ".\n");
@@ -237,19 +231,17 @@ public class Controller {
                 }
             }
 
-            updateLists();
-
             txtMessages.appendText("\n");
 
             moveTo(player.getCurrentLocation());
         } else {
             damageFromMonster();
-            updateLists();
         }
     }
 
     private void usePotion() {
         HealingPotion potion = null;
+
         for (InventoryItem ii : player.getInventory()) {
             if (ii.getDetails() instanceof HealingPotion) {
                 if (ii.getQuantity() > 0) {
@@ -260,23 +252,22 @@ public class Controller {
             }
         }
 
+        if (potion == null) {
+            cboPotions.setVisible(false);
+            btnUsePotion.setVisible(false);
+        }
+
         player.setCurrentHitPoints(player.getCurrentHitPoints() + potion.getAmountToHeal());
 
         if (player.getCurrentHitPoints() > player.getMaximumHitPoints()) {
             player.setCurrentHitPoints(player.getMaximumHitPoints());
         }
 
-        for (InventoryItem ii : player.getInventory()) {
-            if (ii.getDetails().getId() == potion.getId()) {
-                ii.setQuantity(ii.getQuantity() - 1);
-                break;
-            }
-        }
+        player.removeItemFromInventory(potion, 1);
 
         txtMessages.appendText("You drink a " + potion.getName() + ".\n");
 
         damageFromMonster();
-        updateLists();
     }
 
     private void damageFromMonster() {
@@ -285,7 +276,6 @@ public class Controller {
         txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
 
         player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
-        updateLists();
 
         if (player.getCurrentHitPoints() <= 0) {
             txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
@@ -330,10 +320,7 @@ public class Controller {
         }
 
         cboWeapons.getItems().clear();
-        if (weapons.size() == 0) {
-            cboWeapons.setVisible(false);
-            btnUseWeapon.setVisible(false);
-        } else {
+        if (weapons.size() > 0) {
             int tmpCounter = 0;
             int currentWeaponIndex = 0;
 
@@ -362,13 +349,13 @@ public class Controller {
 
         cboPotions.getItems().clear();
 
-        if (healingPotions.size() == 0) {
-            cboPotions.setVisible(false);
-            btnUsePotion.setVisible(false);
-        } else {
+        if (healingPotions.size() > 0) {
             for (HealingPotion hp : healingPotions) {
                 cboPotions.getItems().add(hp.getName());
             }
+        } else {
+            btnUsePotion.setVisible(false);
+            cboPotions.setVisible(false);
         }
     }
 
@@ -418,5 +405,24 @@ public class Controller {
         lblHitPoints.textProperty().bind(player.currentHitPointsProperty().asString());
         lblExperience.textProperty().bind(player.experiencePointsProperty().asString());
         lblLevel.textProperty().bind(player.levelProperty().asString());
+    }
+
+    @Override
+    public void updateGUI(Event eventType, Object content) {
+        switch (eventType) {
+            case UPDATE_TABLE_INVENTORY:
+                updateInventoryListUI();
+                break;
+            case UPDATE_TABLE_QUESTS:
+                updateQuestListUI();
+                break;
+            case UPDATE_POTION_COMBO:
+                updatePotionListUI();
+                break;
+            case UPDATE_WEAPON_COMBO:
+                updateWeaponListUI();
+            case UPDATE_ALL:
+                updateLists();
+        }
     }
 }

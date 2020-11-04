@@ -2,6 +2,7 @@ package engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -9,6 +10,7 @@ import javax.xml.transform.dom.DOMSource;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.w3c.dom.*;
+import ui.GameObserver;
 
 public class Player extends LivingCreature {
     private IntegerProperty gold = new SimpleIntegerProperty();
@@ -62,9 +64,7 @@ public class Player extends LivingCreature {
                 int id = Integer.valueOf(iiNodeList.item(i).getAttributes().item(0).getTextContent());
                 int quantity = Integer.valueOf(iiNodeList.item(i).getAttributes().item(1).getTextContent());
 
-                for (int q = 0; q < quantity; q++) {
-                    player.addItemToInventory(World.itemByID(id));
-                }
+                player.addItemToInventory(World.itemByID(id), quantity);
             }
 
             for (int i = 0; i < pqNodeList.getLength(); i++) {
@@ -186,17 +186,56 @@ public class Player extends LivingCreature {
         for (QuestCompletionItem qci : quest.getQuestCompletionItems()) {
             InventoryItem item = inventory.stream().filter(ii -> ii.getDetails().getId() == qci.getDetails().getId()).findFirst().orElse(null);
             if (item != null) {
-                item.setQuantity(item.getQuantity() - qci.getQuantity());
+                removeItemFromInventory(item.getDetails(), qci.getQuantity());
             }
         }
     }
 
-    public void addItemToInventory(Item itemToAdd) {
+    public void addItemToInventory(Item itemToAdd, int quantity) {
         InventoryItem item = inventory.stream().filter(ii -> ii.getDetails().getId() == itemToAdd.getId()).findFirst().orElse(null);
+
         if (item == null) {
-            inventory.add(new InventoryItem(itemToAdd, 1));
+            inventory.add(new InventoryItem(itemToAdd, quantity));
         } else {
-            item.setQuantity(item.getQuantity() + 1);
+            item.setQuantity(item.getQuantity() + quantity);
+        }
+
+        notifyObservers(GameObserver.Event.UPDATE_TABLE_INVENTORY, null);
+
+        if (itemToAdd instanceof Weapon) {
+            notifyObservers(GameObserver.Event.UPDATE_WEAPON_COMBO, null);
+        } else if (itemToAdd instanceof HealingPotion) {
+            notifyObservers(GameObserver.Event.UPDATE_POTION_COMBO, null);
+        }
+    }
+
+    public void addQuestToQuestsList(Quest quest) {
+        quests.add(new PlayerQuest(quest));
+
+        notifyObservers(GameObserver.Event.UPDATE_TABLE_QUESTS, null);
+    }
+
+    public void removeItemFromInventory(Item itemToRemove, int quantity) {
+        InventoryItem item = inventory.stream().filter(ii -> ii.getDetails().getId() == itemToRemove.getId()).findFirst().orElse(null);
+
+        if (item == null) {
+
+        } else {
+            item.setQuantity(item.getQuantity() - quantity);
+            if (item.getQuantity() < 0) {
+                item.setQuantity(0);
+            }
+            if (item.getQuantity() == 0) {
+                inventory.remove(item);
+            }
+
+            notifyObservers(GameObserver.Event.UPDATE_TABLE_INVENTORY, null);
+
+            if (item.getDetails() instanceof Weapon) {
+                notifyObservers(GameObserver.Event.UPDATE_WEAPON_COMBO, null);
+            } else if (item.getDetails() instanceof HealingPotion) {
+                notifyObservers(GameObserver.Event.UPDATE_POTION_COMBO, null);
+            }
         }
     }
 
@@ -205,6 +244,8 @@ public class Player extends LivingCreature {
         if (playerQuest != null) {
             playerQuest.setCompleted(true);
         }
+
+        notifyObservers(GameObserver.Event.UPDATE_TABLE_QUESTS, null);
     }
 
     public DOMSource toXmlDomSource() {
@@ -299,5 +340,13 @@ public class Player extends LivingCreature {
 
     public void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
+    }
+
+    public ArrayList<InventoryItem> getWeapons() {
+        return new ArrayList<InventoryItem>(inventory.stream().filter(ii -> ii.getDetails() instanceof Weapon).collect(Collectors.toList()));
+    }
+
+    public ArrayList<InventoryItem> getPotions() {
+        return new ArrayList<InventoryItem>(inventory.stream().filter(ii -> ii.getDetails() instanceof HealingPotion).collect(Collectors.toList()));
     }
 }

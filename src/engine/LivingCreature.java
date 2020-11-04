@@ -3,7 +3,7 @@ package engine;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class LivingCreature {
+public class LivingCreature extends ObservableGamePart {
     private int maximumHitPoints;
     IntegerProperty currentHitPoints = new SimpleIntegerProperty();
 
