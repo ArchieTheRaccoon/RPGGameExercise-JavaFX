@@ -267,6 +267,7 @@ public class Controller implements GameObserver {
         }
 
         player.removeItemFromInventory(potion, 1);
+        updateGUI(Event.UPDATE_ALL, null);
 
         txtMessages.appendText("You drink a " + potion.getName() + ".\n");
 
