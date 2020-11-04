@@ -2,12 +2,13 @@ package engine;
 
 public class Item {
     private String name, namePlural;
-    private int id;
+    private int id, price;
 
-    public Item(int id, String name, String namePlural) {
+    public Item(int id, String name, String namePluralб, int price) {
         this.id = id;
         this.name = name;
         this.namePlural = namePlural;
+        this.price = price;
     }
 
     public String getNamePlural() {
@@ -34,4 +35,11 @@ public class Item {
         this.id = id;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
 }

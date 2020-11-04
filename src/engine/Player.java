@@ -10,7 +10,6 @@ import javax.xml.transform.dom.DOMSource;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import org.w3c.dom.*;
-import ui.Controller;
 import ui.GameObserver;
 
 public class Player extends LivingCreature {
@@ -350,4 +349,5 @@ public class Player extends LivingCreature {
     public ArrayList<InventoryItem> getPotions() {
         return new ArrayList<InventoryItem>(inventory.stream().filter(ii -> ii.getDetails() instanceof HealingPotion).collect(Collectors.toList()));
     }
+
 }

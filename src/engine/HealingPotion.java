@@ -3,8 +3,8 @@ package engine;
 public class HealingPotion extends Item {
     private int amountToHeal;
 
-    public HealingPotion(int id, String name, String namePlural, int amountToHeal) {
-        super(id, name, namePlural);
+    public HealingPotion(int id, String name, String namePlural, int amountToHeal, int price) {
+        super(id, name, namePlural, price);
         this.amountToHeal = amountToHeal;
     }
 

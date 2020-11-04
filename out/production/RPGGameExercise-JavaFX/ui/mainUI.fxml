@@ -80,5 +80,7 @@
         </TableView>
       <Button fx:id="btnLoadData" layoutX="18.0" layoutY="651.0" mnemonicParsing="false" onAction="#loadDataFile" text="Load Player Data" />
       <Button fx:id="btnSaveData" layoutX="223.0" layoutY="651.0" mnemonicParsing="false" onAction="#saveDataFile" text="Save Player Data" />
+      <Button fx:id="btnTrade" layoutX="493.0" layoutY="640.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="75.0" text="Shop" />
+      <Pane layoutX="250.0" layoutY="185.0" prefHeight="200.0" prefWidth="200.0" />
     </children>
 </Pane>

@@ -3,8 +3,8 @@ package engine;
 public class Weapon extends Item {
     private int minimumDamage, maximumDamage;
 
-    public Weapon(int id, String name, String namePlural, int minimumDamage, int maximumDamage) {
-        super(id, name, namePlural);
+    public Weapon(int id, String name, String namePlural, int minimumDamage, int maximumDamage, int price) {
+        super(id, name, namePlural, price);
         this.minimumDamage = minimumDamage;
         this.maximumDamage = maximumDamage;
     }

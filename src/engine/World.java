@@ -37,6 +37,8 @@ public class World {
     public final static int LOCATION_ID_BRIDGE = 8;
     public final static int LOCATION_ID_SPIDER_FIELD = 9;
 
+    public final static int UNSELLABLE_ITEM_PRICE = -1;
+
     public World() {
         populateItems();
         populateMonsters();
@@ -45,16 +47,16 @@ public class World {
     }
 
     private static void populateItems() {
-        items.add(new Weapon(ITEM_ID_RUSTY_SWORD, "Rusty sword", "Rusty swords", 0, 5));
-        items.add(new Item(ITEM_ID_RAT_TAIL, "Rat tail", "Rat tails"));
-        items.add(new Item(ITEM_ID_PIECE_OF_FUR, "Piece of fur", "Pieces of fur"));
-        items.add(new Item(ITEM_ID_SNAKE_FANG, "Snake fang", "Snake fangs"));
-        items.add(new Item(ITEM_ID_SNAKESKIN, "Snakeskin", "Snakeskins"));
-        items.add(new Weapon(ITEM_ID_BANDITS_KNIFE, "Bandit's Knife", "Bandit's Knifes", 0, 7));
-        items.add(new HealingPotion(ITEM_ID_HEALING_POTION, "Healing potion", "Healing potions", 5));
-        items.add(new Item(ITEM_ID_SPIDER_FANG, "Spider fang", "Spider fangs"));
-        items.add(new Item(ITEM_ID_SPIDER_SILK, "Spider silk", "Spider silks"));
-        items.add(new Item(ITEM_ID_ADVENTURER_PASS, "Adventurer pass", "Adventurer passes"));
+        items.add(new Weapon(ITEM_ID_RUSTY_SWORD, "Rusty sword", "Rusty swords", 0, 5, 5));
+        items.add(new Item(ITEM_ID_RAT_TAIL, "Rat tail", "Rat tails", 1));
+        items.add(new Item(ITEM_ID_PIECE_OF_FUR, "Piece of fur", "Pieces of fur", 1));
+        items.add(new Item(ITEM_ID_SNAKE_FANG, "Snake fang", "Snake fangs", 1));
+        items.add(new Item(ITEM_ID_SNAKESKIN, "Snakeskin", "Snakeskins", 2));
+        items.add(new Weapon(ITEM_ID_BANDITS_KNIFE, "Bandit's Knife", "Bandit's Knifes", 0, 7, 150));
+        items.add(new HealingPotion(ITEM_ID_HEALING_POTION, "Healing potion", "Healing potions", 5, 3));
+        items.add(new Item(ITEM_ID_SPIDER_FANG, "Spider fang", "Spider fangs", 1));
+        items.add(new Item(ITEM_ID_SPIDER_SILK, "Spider silk", "Spider silks", 1));
+        items.add(new Item(ITEM_ID_ADVENTURER_PASS, "Adventurer pass", "Adventurer passes", UNSELLABLE_ITEM_PRICE));
     }
 
     private static void populateMonsters() {
@@ -97,6 +99,11 @@ public class World {
         Location home = new Location(LOCATION_ID_HOME, "Home", "Your house. You really need to clean up your room!", null, null, null);
 
         Location townSquare = new Location(LOCATION_ID_TOWN_SQUARE, "Town square", "You see a fountain.", null, null, null);
+        Vendor greiratTheMasterThief = new Vendor("Greirat the Master-Thief");
+        greiratTheMasterThief.addItemToInventory(itemByID(ITEM_ID_PIECE_OF_FUR), 5);
+        greiratTheMasterThief.addItemToInventory(itemByID(ITEM_ID_RAT_TAIL), 3);
+        greiratTheMasterThief.addItemToInventory(itemByID(ITEM_ID_BANDITS_KNIFE), 1);
+        townSquare.setVendorWorkingHere(greiratTheMasterThief);
 
         Location alchemistHut = new Location(LOCATION_ID_ALCHEMIST_HUT, "Alchemist's hut", "There are many strange plants on the shelves", null, null, null);
         alchemistHut.setQuestAvailableHere(questByID(QUEST_ID_CLEAR_ALCHEMIST_GARDEN));

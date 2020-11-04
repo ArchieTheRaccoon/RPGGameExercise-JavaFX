@@ -7,6 +7,7 @@ public class Location {
     private Quest questAvailableHere;
     private Monster monsterLivingHere;
     private Location locationToNorth, locationToEast, locationToSouth, locationToWest;
+    private Vendor vendorWorkingHere;
 
 
     public Location(int id, String name, String description, Item itemRequiredToEnter, Quest questAvailableHere, Monster monsterLivingHere) {
@@ -98,4 +99,11 @@ public class Location {
         this.locationToWest = locationToWest;
     }
 
+    public Vendor getVendorWorkingHere() {
+        return vendorWorkingHere;
+    }
+
+    public void setVendorWorkingHere(Vendor vendorWorkingHere) {
+        this.vendorWorkingHere = vendorWorkingHere;
+    }
 }

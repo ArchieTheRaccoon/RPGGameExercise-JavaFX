@@ -29,6 +29,7 @@ public class Controller implements GameObserver {
     public Button btnWest;
     public Button btnLoadData;
     public Button btnSaveData;
+    public Button btnTrade;
 
     public TextArea txtLocation;
     public TextArea txtMessages;
@@ -429,6 +430,7 @@ public class Controller implements GameObserver {
                 updateWeaponListUI();
             case UPDATE_ALL:
                 updateLists();
+                btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
         }
     }
 }
