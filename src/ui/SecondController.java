@@ -61,8 +61,6 @@ public class SecondController {
             });
             sellButton.setPrefWidth(tblclmnSellMyInventory.getPrefWidth());
 
-            buttons.add(sellButton);
-
             if (ii.getQuantity() > 0) {
                 shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice()), sellButton));
             }
@@ -71,7 +69,36 @@ public class SecondController {
         tblMyItems.setItems(shortInventoryList);
 
         tblVendorsItems.getItems().clear();
-        
+
+        shortInventoryList.clear();
+
+        for (InventoryItem ii : currentPlayer.getCurrentLocation().getVendorWorkingHere().getInventory()) {
+            Button buyButton = new Button("Buy");
+
+            buyButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    clickBuyButton(ii);
+                }
+            });
+            buyButton.setPrefWidth(tblclmnBuyVendor.getPrefWidth());
+
+            if (ii.getQuantity() > 0) {
+                shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice()), buyButton));
+            }
+        }
+    }
+
+    public void clickBuyButton(InventoryItem ii) {
+        if (currentPlayer.getGold() < ii.getDetails().getPrice()) {
+            new Alert(Alert.AlertType.INFORMATION, "You don't have enough gold to buy " + ii.getDetails().getNamePlural() + ".").showAndWait();
+        } else {
+            currentPlayer.setGold(currentPlayer.getGold() - ii.getDetails().getPrice());
+            currentPlayer.addItemToInventory(ii.getDetails(), 1);
+            currentPlayer.getCurrentLocation().getVendorWorkingHere().removeItemFromInventory(ii.getDetails(), 1);
+
+            updateTables();
+        }
     }
 
     public void clickSellButton(InventoryItem ii) {
