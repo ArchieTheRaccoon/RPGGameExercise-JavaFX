@@ -85,7 +85,12 @@ public class Controller implements GameObserver {
     private void initializeComponents() {
         world = new World();
 
-        player = Player.createDefaultPlayer();
+        player = SavePlayer.getSavedPlayer();
+
+        if (player == null) {
+            player = Player.createDefaultPlayer();
+        }
+
         initializeObservableLabels();
 
         player.addObserver(this);
@@ -449,9 +454,6 @@ public class Controller implements GameObserver {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
             Parent root = fxmlLoader.load();
 
-            SecondController secondController = fxmlLoader.getController();
-            secondController.initializeThisAll(player);
-
             Stage secondStage = new Stage();
             secondStage.setTitle("Trade");
             secondStage.setScene(new Scene(root));
@@ -460,5 +462,4 @@ public class Controller implements GameObserver {
             e.printStackTrace();
         }
     }
-
 }

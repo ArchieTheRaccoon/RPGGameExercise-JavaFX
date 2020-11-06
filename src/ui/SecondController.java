@@ -36,16 +36,13 @@ public class SecondController {
 
     private ObservableList<Button> buttons = FXCollections.observableArrayList();
 
-    public void initializeThisAll(Player player) {
+    public void initialize() {
         tblclmnItemMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantityMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
         tblclmnPriceMyInventory.setCellValueFactory(new PropertyValueFactory<>("Price"));
         tblclmnSellMyInventory.setCellValueFactory(new PropertyValueFactory<>("button"));
 
-        Player check = SavePlayer.getSavedPlayer();
-
-
-        currentPlayer = player;
+        currentPlayer = SavePlayer.getSavedPlayer();
         updateTables();
     }
 
@@ -90,7 +87,7 @@ public class SecondController {
 
     @FXML
     private void closeWindow() {
-
+        SavePlayer.setSavedPlayer(currentPlayer);
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
     }
