@@ -68,8 +68,10 @@ public class SecondController {
             }
         }
 
-
         tblMyItems.setItems(shortInventoryList);
+
+        tblVendorsItems.getItems().clear();
+        
     }
 
     public void clickSellButton(InventoryItem ii) {
