@@ -6,16 +6,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import ui.Controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class SecondController {
     public TableView<InventoryTablePlayer> tblVendorsItems;
@@ -34,13 +28,18 @@ public class SecondController {
 
     public Player currentPlayer;
 
-    private ObservableList<Button> buttons = FXCollections.observableArrayList();
+//    private ObservableList<Button> buttons = FXCollections.observableArrayList();
 
     public void initialize() {
         tblclmnItemMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantityMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
         tblclmnPriceMyInventory.setCellValueFactory(new PropertyValueFactory<>("Price"));
         tblclmnSellMyInventory.setCellValueFactory(new PropertyValueFactory<>("button"));
+
+        tblclmnItemVendor.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
+        tblclmnQuantityVendor.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
+        tblclmnPriceVendor.setCellValueFactory(new PropertyValueFactory<>("Price"));
+        tblclmnBuyVendor.setCellValueFactory(new PropertyValueFactory<>("button"));
 
         currentPlayer = SavePlayer.getSavedPlayer();
         updateTables();
@@ -70,7 +69,7 @@ public class SecondController {
 
         tblVendorsItems.getItems().clear();
 
-        shortInventoryList.clear();
+        ObservableList<InventoryTablePlayer> shortVendorInventoryList = FXCollections.observableArrayList();
 
         for (InventoryItem ii : currentPlayer.getCurrentLocation().getVendorWorkingHere().getInventory()) {
             Button buyButton = new Button("Buy");
@@ -84,9 +83,11 @@ public class SecondController {
             buyButton.setPrefWidth(tblclmnBuyVendor.getPrefWidth());
 
             if (ii.getQuantity() > 0) {
-                shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice()), buyButton));
+                shortVendorInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice()), buyButton));
             }
         }
+
+        tblVendorsItems.setItems(shortVendorInventoryList);
     }
 
     public void clickBuyButton(InventoryItem ii) {
