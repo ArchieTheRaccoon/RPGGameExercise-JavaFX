@@ -120,6 +120,8 @@ public class SecondController {
 
     @FXML
     private void closeWindow() {
+        MusicPlayer.turnOffShopMusic();
+        MusicPlayer.turnOnMenuMusic();
         SavePlayer.setSavedPlayer(currentPlayer);
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();

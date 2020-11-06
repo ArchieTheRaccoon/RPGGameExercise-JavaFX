@@ -468,6 +468,7 @@ public class Controller implements GameObserver {
 
     public void clickTrade() {
         MusicPlayer.turnOffMenuMusic();
+        MusicPlayer.turnOnShopMusic();
         SavePlayer.setSavedPlayer(player);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));

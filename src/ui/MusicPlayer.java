@@ -2,6 +2,7 @@ package ui;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.nio.file.Paths;
 
@@ -18,6 +19,7 @@ public class MusicPlayer {
 
     public static void turnOnMenuMusic() {
         isMenuMusicPlaying = true;
+        mediaPlayerMENU.seek(Duration.ZERO);
         mediaPlayerMENU.setVolume(0.1);
         mediaPlayerMENU.play();
     }
@@ -29,6 +31,7 @@ public class MusicPlayer {
 
     public static void turnOnFightMusic() {
         mediaPlayerFIGHT.setVolume(0.1);
+        mediaPlayerFIGHT.seek(Duration.ZERO);
         mediaPlayerFIGHT.play();
     }
 
@@ -37,6 +40,7 @@ public class MusicPlayer {
     }
 
     public static void turnOnShopMusic() {
+        mediaPlayerSHOP.seek(Duration.ZERO);
         mediaPlayerSHOP.setVolume(0.1);
         mediaPlayerSHOP.play();
     }
