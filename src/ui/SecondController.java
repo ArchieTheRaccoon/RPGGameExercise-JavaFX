@@ -104,8 +104,6 @@ public class SecondController {
 
     public void clickSellButton(InventoryItem ii) {
         if (ii.getDetails().getPrice() == World.UNSELLABLE_ITEM_PRICE) {
-            //The Selected item can't be selled
-//            DialogPane box = new DialogPane();
             new Alert(Alert.AlertType.INFORMATION, "You can't sell " + ii.getDetails().getNamePlural() + ".").showAndWait();
         } else {
             currentPlayer.setGold(currentPlayer.getGold() + ii.getDetails().getPrice());
