@@ -1,14 +1,18 @@
 package engine;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Button;
+
 
 public class InventoryTablePlayer {
     private SimpleStringProperty itemName, itemAmount, price;
+    private Button button;
 
-    public InventoryTablePlayer(String itemName, String itemAmount, String price) {
+    public InventoryTablePlayer(String itemName, String itemAmount, String price, Button button) {
         this.itemName = new SimpleStringProperty(itemName);
         this.itemAmount = new SimpleStringProperty(itemAmount);
         this.price = new SimpleStringProperty(price);
+        this.button = button;
     }
 
     public String getItemName() {
@@ -45,5 +49,13 @@ public class InventoryTablePlayer {
 
     public void setPrice(String price) {
         this.price = new SimpleStringProperty(price);
+    }
+
+    public Button getButton() {
+        return button;
+    }
+
+    public void setButton(Button button) {
+        this.button = button;
     }
 }

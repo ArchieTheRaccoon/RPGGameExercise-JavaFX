@@ -19,7 +19,7 @@
       <Button fx:id="btnClose" layoutX="485.0" layoutY="310.0" mnemonicParsing="false" onAction="#closeWindow" text="Close" />
       <TableView fx:id="tblMyItems" layoutX="13.0" layoutY="43.0" prefHeight="216.0" prefWidth="235.0">
         <columns>
-          <TableColumn fx:id="tblclmnItemMyInventory" editable="false" minWidth="100.0" prefWidth="100.0" sortable="false" text="Item" />
+          <TableColumn fx:id="tblclmnItemMyInventory" editable="false" minWidth="99.0" prefWidth="99.0" sortable="false" text="Item" />
           <TableColumn fx:id="tblclmnQuantityMyInventory" editable="false" minWidth="58.0" prefWidth="58.0" sortable="false" text="Quantity" />
             <TableColumn fx:id="tblclmnPriceMyInventory" editable="false" prefWidth="40.0" sortable="false" text="Price" />
             <TableColumn fx:id="tblclmnSellMyInventory" editable="false" minWidth="38.0" prefWidth="38.0" sortable="false" text="Sell?" />
@@ -27,7 +27,7 @@
       </TableView>
       <TableView fx:id="tblVendorsItems" layoutX="276.0" layoutY="43.0" prefHeight="216.0" prefWidth="235.0">
         <columns>
-          <TableColumn fx:id="tblclmnItemVendor" editable="false" minWidth="100.0" prefWidth="100.0" sortable="false" text="Item" />
+          <TableColumn fx:id="tblclmnItemVendor" editable="false" minWidth="99.0" prefWidth="99.0" sortable="false" text="Item" />
           <TableColumn fx:id="tblclmnQuantityVendor" editable="false" minWidth="58.0" prefWidth="58.0" sortable="false" text="Quantity" />
             <TableColumn fx:id="tblclmnPriceVendor" editable="false" minWidth="40.0" prefWidth="40.0" sortable="false" text="Price" />
             <TableColumn fx:id="tblclmnBuyVendor" minWidth="41.0" prefWidth="41.0" text="Buy?" />

@@ -3,13 +3,20 @@ package ui;
 import engine.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
+import javax.management.MXBean;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -437,11 +444,21 @@ public class Controller implements GameObserver {
     }
 
     public void clickTrade() {
+        SavePlayer.setSavedPlayer(player);
         try {
-            SecondController secondController = new SecondController();
-            secondController.clickTradeAction(player);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
+            Parent root = fxmlLoader.load();
+
+            SecondController secondController = fxmlLoader.getController();
+            secondController.initializeThisAll(player);
+
+            Stage secondStage = new Stage();
+            secondStage.setTitle("Trade");
+            secondStage.setScene(new Scene(root));
+            secondStage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

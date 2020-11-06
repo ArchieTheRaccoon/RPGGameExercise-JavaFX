@@ -1,20 +1,21 @@
 package ui;
 
-import engine.InventoryItem;
-import engine.InventoryTablePlayer;
-import engine.Player;
-import engine.World;
+import engine.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import ui.Controller;
 
-import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class SecondController {
     public TableView<InventoryTablePlayer> tblVendorsItems;
@@ -31,56 +32,47 @@ public class SecondController {
     public TableColumn<InventoryTablePlayer, String> tblclmnPriceVendor;
     public TableColumn<InventoryTablePlayer, String> tblclmnBuyVendor;
 
+    public Player currentPlayer;
+
     private ObservableList<Button> buttons = FXCollections.observableArrayList();
 
-    private Player currentPlayer = new Player(10,10,20,0);
-
-    public void initialize() {
+    public void initializeThisAll(Player player) {
         tblclmnItemMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantityMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
         tblclmnPriceMyInventory.setCellValueFactory(new PropertyValueFactory<>("Price"));
-        tblclmnSellMyInventory.setCellValueFactory(new PropertyValueFactory<>("Sellable"));
+        tblclmnSellMyInventory.setCellValueFactory(new PropertyValueFactory<>("button"));
 
+        Player check = SavePlayer.getSavedPlayer();
+
+
+        currentPlayer = player;
         updateTables();
     }
 
     private void updateTables() {
         tblMyItems.getItems().clear();
 
-        Player player = getCurrentPlayer();
-
         ObservableList<InventoryTablePlayer> shortInventoryList = FXCollections.observableArrayList();
-        shortInventoryList.add(new InventoryTablePlayer("Bitch", "5", "7"));
+        for (InventoryItem ii : currentPlayer.getInventory()) {
+            Button sellButton = new Button("Sell");
 
-        for (InventoryItem ii : player.getInventory()) {
-            shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice())));
+            sellButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    clickSellButton(ii);
+                }
+            });
+            sellButton.setPrefWidth(tblclmnSellMyInventory.getPrefWidth());
+
+            buttons.add(sellButton);
+
+            if (ii.getQuantity() > 0) {
+                shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice()), sellButton));
+            }
         }
 
+
         tblMyItems.setItems(shortInventoryList);
-
-//        for (InventoryItem ii : currentPlayer.getInventory()) {
-//            System.out.println(ii.getDetails().getName());
-//            String nameOfItem = ii.getDetails().getName();
-//            String amountOfItem = String.valueOf(ii.getQuantity());
-//            String priceOfItem = String.valueOf(ii.getDetails().getPrice());
-//        }
-
-//
-//        for (InventoryItem ii : currentPlayer.getInventory()) {
-//            System.out.println("Bitch");
-//            shortInventoryList.add(new InventoryTablePlayer(ii.getDetails().getName(), String.valueOf(ii.getQuantity()), String.valueOf(ii.getDetails().getPrice())));
-//
-//            Button sellButton = new Button(tblMyItems.getItems().toString());
-//
-//            sellButton.addEventHandler(MouseEvent.MOUSE_CLICKED,
-//                    (event -> clickSellButton(ii)));
-//
-//            sellButton.setText("Sell");
-//            buttons.add(sellButton);
-//        }
-//
-//        tblMyItems.setItems(shortInventoryList);
-
     }
 
     public void clickSellButton(InventoryItem ii) {
@@ -96,33 +88,10 @@ public class SecondController {
         }
     }
 
-    public void clickTradeAction(Player player) throws IOException {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
-
-            Scene scene = new Scene(fxmlLoader.load(), 544, 349);
-            Stage secondStage = new Stage();
-            secondStage.setTitle("Trade");
-            secondStage.setScene(scene);
-            secondStage.show();
-
-            setCurrentPlayer(player);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     private void closeWindow() {
+
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
-    }
-
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
     }
 }
