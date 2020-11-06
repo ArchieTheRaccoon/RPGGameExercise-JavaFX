@@ -8,16 +8,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-import javax.management.MXBean;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.awt.event.ActionEvent;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,24 +56,28 @@ public class Controller implements GameObserver {
     public Player player = new Player(10,10,20,0);
     private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
 
-
     public void initialize() {
+        MusicPlayer.turnOnMenuMusic();
         initializeComponents();
     }
 
     public void clickButtonNorth() {
+        soundMove();
         moveTo(player.getCurrentLocation().getLocationToNorth());
     }
 
     public void clickButtonEast() {
+        soundMove();
         moveTo(player.getCurrentLocation().getLocationToEast());
     }
 
     public void clickButtonSouth() {
+        soundMove();
         moveTo(player.getCurrentLocation().getLocationToSouth());
     }
 
     public void clickButtonWest() {
+        soundMove();
         moveTo(player.getCurrentLocation().getLocationToWest());
     }
 
@@ -138,6 +143,7 @@ public class Controller implements GameObserver {
                     boolean playerHasAllItemsToCompleteQuest = player.hasAllQuestCompletionItems(newLocation.getQuestAvailableHere());
 
                     if (playerHasAllItemsToCompleteQuest) {
+                        soundLevel();
                         txtMessages.appendText("\nYou completed the " + newLocation.getQuestAvailableHere().getName() + "quest.\n");
 
                         player.removeQuestCompletionItems(newLocation.getQuestAvailableHere());
@@ -174,6 +180,8 @@ public class Controller implements GameObserver {
         }
 
         if (newLocation.getMonsterLivingHere() != null) {
+            MusicPlayer.turnOffMenuMusic();
+            MusicPlayer.turnOnFightMusic();
             txtMessages.appendText("You see a " + newLocation.getMonsterLivingHere().getName() + "\n");
 
             Monster standardMonster = World.monsterByID(newLocation.getMonsterLivingHere().getId());
@@ -190,6 +198,10 @@ public class Controller implements GameObserver {
             btnUseWeapon.setVisible(player.getWeapons().size() > 0);
             btnUsePotion.setVisible(player.getPotions().size() > 0);
         } else {
+            MusicPlayer.turnOffFightMusic();
+            if (!MusicPlayer.isMenuMusicPlaying()) {
+                MusicPlayer.turnOnMenuMusic();
+            }
             cboPotions.setVisible(false);
             cboWeapons.setVisible(false);
             btnUsePotion.setVisible(false);
@@ -199,6 +211,7 @@ public class Controller implements GameObserver {
     }
 
     private void useWeapon() {
+        soundAttack();
         Weapon currentWeapon = null;
 
         for (InventoryItem ii : player.getInventory()) {
@@ -263,6 +276,7 @@ public class Controller implements GameObserver {
     }
 
     private void usePotion() {
+        soundPotion();
         HealingPotion potion = null;
 
         for (InventoryItem ii : player.getInventory()) {
@@ -453,6 +467,7 @@ public class Controller implements GameObserver {
     }
 
     public void clickTrade() {
+        MusicPlayer.turnOffMenuMusic();
         SavePlayer.setSavedPlayer(player);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
@@ -462,6 +477,42 @@ public class Controller implements GameObserver {
             secondStage.setTitle("Trade");
             secondStage.setScene(new Scene(root));
             secondStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void soundMove() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eMOVE.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void soundAttack() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eATTACK.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void soundPotion() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/ePOTION.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void soundLevel() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eLEVEL.mp3").toUri().toString());
+            eMOVE.play(0.5);
         } catch (Exception e) {
             e.printStackTrace();
         }

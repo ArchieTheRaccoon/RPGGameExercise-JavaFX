@@ -8,7 +8,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
+
+import java.nio.file.Paths;
 
 
 public class SecondController {
@@ -91,6 +94,7 @@ public class SecondController {
     }
 
     public void clickBuyButton(InventoryItem ii) {
+        soundMoney();
         if (currentPlayer.getGold() < ii.getDetails().getPrice()) {
             new Alert(Alert.AlertType.INFORMATION, "You don't have enough gold to buy " + ii.getDetails().getNamePlural() + ".").showAndWait();
         } else {
@@ -103,6 +107,7 @@ public class SecondController {
     }
 
     public void clickSellButton(InventoryItem ii) {
+        soundMoney();
         if (ii.getDetails().getPrice() == World.UNSELLABLE_ITEM_PRICE) {
             new Alert(Alert.AlertType.INFORMATION, "You can't sell " + ii.getDetails().getNamePlural() + ".").showAndWait();
         } else {
@@ -118,5 +123,14 @@ public class SecondController {
         SavePlayer.setSavedPlayer(currentPlayer);
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
+    }
+
+    public void soundMoney() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eMONEY.mp3").toUri().toString());
+            eMOVE.play(0.6);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
