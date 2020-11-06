@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="349.0" prefWidth="544.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.SecondController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="349.0" prefWidth="544.0" style="-fx-background-color: linear-gradient(to left, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.SecondController">
    <children>
       <Label fx:id="lblMyInventory" layoutX="99.0" layoutY="13.0" text="My Inventory">
          <font>
