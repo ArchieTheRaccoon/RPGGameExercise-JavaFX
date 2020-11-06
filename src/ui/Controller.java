@@ -10,8 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import javax.xml.transform.*;
@@ -53,7 +51,7 @@ public class Controller implements GameObserver {
 
     private Monster currentMonster;
     private World world;
-    public Player player = new Player(10,10,20,0);
+    private Player player;
     private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
 
     public void initialize() {
