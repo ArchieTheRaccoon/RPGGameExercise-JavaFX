@@ -19,7 +19,13 @@ public class MusicPlayer {
 
     public static void turnOnMenuMusic() {
         isMenuMusicPlaying = true;
-        mediaPlayerMENU.seek(Duration.ZERO);
+        mediaPlayerMENU.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayerMENU.seek(Duration.ZERO);
+                mediaPlayerMENU.play();
+            }
+        });
         mediaPlayerMENU.setVolume(0.1);
         mediaPlayerMENU.play();
     }
@@ -31,7 +37,13 @@ public class MusicPlayer {
 
     public static void turnOnFightMusic() {
         mediaPlayerFIGHT.setVolume(0.1);
-        mediaPlayerFIGHT.seek(Duration.ZERO);
+        mediaPlayerFIGHT.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayerFIGHT.seek(Duration.ZERO);
+                mediaPlayerFIGHT.play();
+            }
+        });
         mediaPlayerFIGHT.play();
     }
 
@@ -40,7 +52,13 @@ public class MusicPlayer {
     }
 
     public static void turnOnShopMusic() {
-        mediaPlayerSHOP.seek(Duration.ZERO);
+        mediaPlayerSHOP.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayerSHOP.seek(Duration.ZERO);
+                mediaPlayerSHOP.play();
+            }
+        });
         mediaPlayerSHOP.setVolume(0.1);
         mediaPlayerSHOP.play();
     }
