@@ -20,6 +20,7 @@ public class Player extends LivingCreature {
     private ArrayList<PlayerQuest> quests;
     private Location currentLocation;
     private Weapon currentWeapon;
+    private HealingPotion currentPotion;
 
     public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) {
         super(currentHitPoints, maximumHitPoints);
@@ -340,6 +341,14 @@ public class Player extends LivingCreature {
 
     public void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
+    }
+
+    public HealingPotion getCurrentPotion() {
+        return currentPotion;
+    }
+
+    public void setCurrentPotion(HealingPotion currentPotion) {
+        this.currentPotion = currentPotion;
     }
 
     public ArrayList<InventoryItem> getWeapons() {

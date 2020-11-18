@@ -30,10 +30,9 @@ public class SecondController {
     public TableColumn<InventoryTablePlayer, String> tblclmnBuyVendor;
 
     public Player currentPlayer;
+    private Controller controller;
 
-//    private ObservableList<Button> buttons = FXCollections.observableArrayList();
-
-    public void initialize() {
+    public void initializeClass() {
         tblclmnItemMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantityMyInventory.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
         tblclmnPriceMyInventory.setCellValueFactory(new PropertyValueFactory<>("Price"));
@@ -44,7 +43,7 @@ public class SecondController {
         tblclmnPriceVendor.setCellValueFactory(new PropertyValueFactory<>("Price"));
         tblclmnBuyVendor.setCellValueFactory(new PropertyValueFactory<>("button"));
 
-        currentPlayer = SavePlayer.getSavedPlayer();
+//        currentPlayer = SavePlayer.getSavedPlayer();
         updateTables();
     }
 
@@ -122,9 +121,11 @@ public class SecondController {
     private void closeWindow() {
         MusicPlayer.turnOffShopMusic();
         MusicPlayer.turnOnMenuMusic();
-        SavePlayer.setSavedPlayer(currentPlayer);
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
+
+        controller.setPlayer(currentPlayer);
+        controller.updateLists();
     }
 
     public void soundMoney() {
@@ -134,5 +135,14 @@ public class SecondController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
+        initializeClass();
+    }
+
+    public void setController(Controller controllerNew) {
+        this.controller = controllerNew;
     }
 }

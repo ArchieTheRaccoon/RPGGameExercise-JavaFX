@@ -11,7 +11,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("mainUI.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("mainUI.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Controller controller = fxmlLoader.getController();
+        controller.setController(controller);
+
         primaryStage.setTitle("RPGGameExercise");
         primaryStage.setScene(new Scene(root, 735, 690));
         primaryStage.show();

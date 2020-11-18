@@ -54,6 +54,8 @@ public class Controller implements GameObserver {
     private Player player;
     private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
 
+    private Controller controller;
+
     public void initialize() {
         MusicPlayer.turnOnMenuMusic();
         initializeComponents();
@@ -88,11 +90,7 @@ public class Controller implements GameObserver {
     }
 
     private void initializeComponents() {
-
-
         world = new World();
-
-        player = SavePlayer.getSavedPlayer();
 
         if (player == null) {
             player = Player.createDefaultPlayer();
@@ -287,11 +285,6 @@ public class Controller implements GameObserver {
             }
         }
 
-        if (potion == null) {
-            cboPotions.setVisible(false);
-            btnUsePotion.setVisible(false);
-        }
-
         player.setCurrentHitPoints(player.getCurrentHitPoints() + potion.getAmountToHeal());
 
         if (player.getCurrentHitPoints() > player.getMaximumHitPoints()) {
@@ -304,6 +297,8 @@ public class Controller implements GameObserver {
         txtMessages.appendText("You drink a " + potion.getName() + ".\n");
 
         damageFromMonster();
+
+        updateGUI(Event.UPDATE_ALL, null);
     }
 
     private void damageFromMonster() {
@@ -384,18 +379,26 @@ public class Controller implements GameObserver {
         }
 
         cboPotions.getItems().clear();
-
         if (healingPotions.size() > 0) {
+            int tmpCounter = 0;
+            int currentPotionIndex = 0;
+
             for (HealingPotion hp : healingPotions) {
+                if (player.getCurrentPotion() != null && hp.getId() == player.getCurrentPotion().getId()) {
+                    currentPotionIndex = tmpCounter;
+                }
+
                 cboPotions.getItems().add(hp.getName());
+                tmpCounter++;
             }
+            cboPotions.getSelectionModel().select(currentPotionIndex);
         } else {
-            btnUsePotion.setVisible(false);
             cboPotions.setVisible(false);
+            btnUsePotion.setVisible(false);
         }
     }
 
-    private void updateLists() {
+    public void updateLists() {
         updateInventoryListUI();
         updateWeaponListUI();
         updateQuestListUI();
@@ -438,6 +441,16 @@ public class Controller implements GameObserver {
         }
     }
 
+    public void saveCurrentPotion() {
+        String newPotionName = cboPotions.getSelectionModel().getSelectedItem();
+
+        for (InventoryItem ii : player.getInventory()) {
+            if (ii.getDetails() instanceof  HealingPotion && ii.getDetails().getName().equals(newPotionName)) {
+                player.setCurrentPotion((HealingPotion) ii.getDetails());
+            }
+        }
+    }
+
     public void initializeObservableLabels() {
         lblGold.textProperty().bind(player.goldProperty().asString());
         lblHitPoints.textProperty().bind(player.currentHitPointsProperty().asString());
@@ -467,10 +480,13 @@ public class Controller implements GameObserver {
     public void clickTrade() {
         MusicPlayer.turnOffMenuMusic();
         MusicPlayer.turnOnShopMusic();
-        SavePlayer.setSavedPlayer(player);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tradeUI.fxml"));
             Parent root = fxmlLoader.load();
+
+            SecondController secondController = fxmlLoader.getController();
+            secondController.setCurrentPlayer(this.player);
+            secondController.setController(this.controller);
 
             Stage secondStage = new Stage();
             secondStage.setTitle("Trade");
@@ -515,5 +531,13 @@ public class Controller implements GameObserver {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    public void setPlayer(Player playerNew) {
+        this.player = playerNew;
     }
 }
