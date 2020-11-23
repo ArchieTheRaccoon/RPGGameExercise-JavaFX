@@ -61,11 +61,8 @@ public class Controller implements GameObserver {
 
     public void initialize() {
         MusicPlayer.turnOnMenuMusic();
-        initializeComponents();
-        mapBox.setLocation(player.getCurrentLocation());
         mapBox.setPane(mapPane);
-        mapBox.setCenterBox();
-        mapBox.setPlayerBox();
+        initializeComponents();
     }
 
     public void clickButtonNorth() {
@@ -211,9 +208,13 @@ public class Controller implements GameObserver {
             btnUseWeapon.setVisible(false);
         }
 
+        newLocation.setPlayerHasBeenHere(true);
+
+        mapBox.clearPane();
         mapBox.setLocation(player.getCurrentLocation());
-        mapBox.setPane(mapPane);
-        mapBox.updateMap();
+        mapBox.setCenterBox();
+        mapBox.checkAllDirections(mapBox.getCenterField(), mapBox.getLocation());
+        mapBox.setPlayerBox();
     }
 
     private void useWeapon() {
@@ -455,7 +456,7 @@ public class Controller implements GameObserver {
         String newPotionName = cboPotions.getSelectionModel().getSelectedItem();
 
         for (InventoryItem ii : player.getInventory()) {
-            if (ii.getDetails() instanceof  HealingPotion && ii.getDetails().getName().equals(newPotionName)) {
+            if (ii.getDetails() instanceof HealingPotion && ii.getDetails().getName().equals(newPotionName)) {
                 player.setCurrentPotion((HealingPotion) ii.getDetails());
             }
         }

@@ -11,66 +11,88 @@ public class MapBoxes {
     private final int prefHeight = 30;
     private final double halfOfPaneWidth = 147.5;
     private final double halfofPaneHeight = 50;
+    private TextField centerField;
 
     public void updateMap() {
         pane.getChildren().clear();
-
-        TextField mapPointEast = new TextField(" ");
-        mapPointEast.setFont(Font.font("Arial", 2));
-        mapPointEast.setPrefSize(prefWidth, prefHeight);
-
-        TextField mapPointSouth = new TextField(" ");
-        mapPointSouth.setFont(Font.font("Arial", 2));
-        mapPointSouth.setPrefSize(prefWidth, prefHeight);
-
-        TextField mapPointWest = new TextField(" ");
-        mapPointWest.setFont(Font.font("Arial", 2));
-        mapPointWest.setPrefSize(prefWidth, prefHeight);
-
-        TextField mapPointNorth = new TextField(" ");
-        mapPointNorth.setFont(Font.font("Arial", 2));
-        mapPointNorth.setPrefSize(prefWidth, prefHeight);
+        pane.getChildren().removeAll();
 
         setCenterBox();
+        checkAllDirections(centerField, getLocation());
         setPlayerBox();
+    }
 
-        if (location.getLocationToEast() != null) {
-            mapPointEast.setLayoutX((halfOfPaneWidth - (prefWidth / 2)) + prefWidth);
-            mapPointEast.setLayoutY(halfofPaneHeight - (prefHeight / 2));
-            colorRedIfMonster(location.getLocationToEast(), mapPointEast);
-            pane.getChildren().add(mapPointEast);
-        }
-
-        if (location.getLocationToSouth() != null) {
-            mapPointSouth.setLayoutX(halfOfPaneWidth - (prefWidth / 2));
-            mapPointSouth.setLayoutY((halfofPaneHeight - (prefHeight / 2)) + prefHeight);
-            colorRedIfMonster(location.getLocationToSouth(), mapPointSouth);
-            pane.getChildren().add(mapPointSouth);
-        }
-
-        if (location.getLocationToWest() != null) {
-            mapPointWest.setLayoutX((halfOfPaneWidth - (prefWidth / 2)) - prefWidth);
-            mapPointWest.setLayoutY(halfofPaneHeight - (prefHeight / 2));
-            colorRedIfMonster(location.getLocationToWest(), mapPointWest);
-            pane.getChildren().add(mapPointWest);
-        }
-
-        if (location.getLocationToNorth() != null) {
-            mapPointNorth.setLayoutX(halfOfPaneWidth - (prefWidth / 2));
-            mapPointNorth.setLayoutY((halfofPaneHeight - (prefHeight / 2)) - prefHeight);
-            colorRedIfMonster(location.getLocationToNorth(), mapPointNorth);
-            pane.getChildren().add(mapPointNorth);
+    public void checkEast(TextField thisMapBox, Location thisLocation) {
+        if (thisLocation != null) {
+            if (thisLocation.getLocationToEast() != null) {
+                if (thisLocation.getLocationToEast().isPlayerHasBeenHere()) {
+                    TextField mapPointEast = new TextField(" ");
+                    mapPointEast.setFont(Font.font("Arial", 2));
+                    mapPointEast.setPrefSize(prefWidth, prefHeight);
+                    mapPointEast.setLayoutX(thisMapBox.getLayoutX() + prefWidth);
+                    mapPointEast.setLayoutY(thisMapBox.getLayoutY());
+                    pane.getChildren().add(mapPointEast);
+                    checkWest(mapPointEast, thisLocation.getLocationToWest());
+                    checkNorth(mapPointEast, thisLocation.getLocationToNorth());
+                    checkSouth(mapPointEast, thisLocation.getLocationToSouth());
+                }
+            }
         }
     }
 
-//    public void checkSidesForLocation(TextField thisMapBox, Location thisLocation) {
-//        thisMapBox.getLayoutX(); //width
-//        thisMapBox.getLayoutY(); //height
-//
-//        if (thisLocation.getLocationToEast() != null) {
-//
-//        }
-//    }
+    public void checkSouth(TextField thisMapBox, Location thisLocation) {
+        if (thisLocation != null) {
+            if (thisLocation.getLocationToSouth() != null) {
+                if (thisLocation.getLocationToSouth().isPlayerHasBeenHere()) {
+                    TextField mapPointSouth = new TextField(" ");
+                    mapPointSouth.setFont(Font.font("Arial", 2));
+                    mapPointSouth.setPrefSize(prefWidth, prefHeight);
+                    mapPointSouth.setLayoutX(thisMapBox.getLayoutX());
+                    mapPointSouth.setLayoutY(thisMapBox.getLayoutY() + prefHeight);
+                    pane.getChildren().add(mapPointSouth);
+                    checkNorth(mapPointSouth, thisLocation.getLocationToNorth());
+                    checkEast(mapPointSouth, thisLocation.getLocationToEast());
+                    checkWest(mapPointSouth, thisLocation.getLocationToWest());
+                }
+            }
+        }
+    }
+
+    public void checkWest(TextField thisMapBox, Location thisLocation) {
+        if (thisLocation != null) {
+            if (thisLocation.getLocationToWest() != null) {
+                if (thisLocation.getLocationToWest().isPlayerHasBeenHere()) {
+                    TextField mapPointWest = new TextField(" ");
+                    mapPointWest.setFont(Font.font("Arial", 2));
+                    mapPointWest.setPrefSize(prefWidth, prefHeight);
+                    mapPointWest.setLayoutX(thisMapBox.getLayoutX() - prefWidth);
+                    mapPointWest.setLayoutY(thisMapBox.getLayoutY());
+                    pane.getChildren().add(mapPointWest);
+                    checkSouth(mapPointWest, thisLocation.getLocationToSouth());
+                    checkEast(mapPointWest, thisLocation.getLocationToEast());
+                    checkNorth(mapPointWest, thisLocation.getLocationToNorth());
+                }
+            }
+        }
+    }
+
+    public void checkNorth(TextField thisMapBox, Location thisLocation) {
+        if (thisLocation != null) {
+            if (thisLocation.getLocationToNorth() != null) {
+                if (thisLocation.getLocationToNorth().isPlayerHasBeenHere()) {
+                    TextField mapPointNorth = new TextField(" ");
+                    mapPointNorth.setFont(Font.font("Arial", 2));
+                    mapPointNorth.setPrefSize(prefWidth, prefHeight);
+                    mapPointNorth.setLayoutX(thisMapBox.getLayoutX());
+                    mapPointNorth.setLayoutY(thisMapBox.getLayoutY() - prefHeight);
+                    pane.getChildren().add(mapPointNorth);
+                    checkEast(mapPointNorth, thisLocation.getLocationToEast());
+                    checkSouth(mapPointNorth, thisLocation.getLocationToSouth());
+                    checkWest(mapPointNorth, thisLocation.getLocationToWest());
+                }
+            }
+        }
+    }
 
     public void setPlayerBox() {
         TextField playerPoint = new TextField(" ");
@@ -82,6 +104,13 @@ public class MapBoxes {
         pane.getChildren().add(playerPoint);
     }
 
+    public void checkAllDirections(TextField thisMapBox, Location thisLocation) {
+        checkSouth(thisMapBox, thisLocation);
+        checkNorth(thisMapBox, thisLocation);
+        checkWest(thisMapBox, thisLocation);
+        checkEast(thisMapBox, thisLocation);
+    }
+
     public void colorRedIfMonster(Location thisLocation, TextField mapPoint) {
         if (thisLocation.getMonsterLivingHere() != null) {
             mapPoint.setStyle("-fx-background-color: red;");
@@ -89,17 +118,15 @@ public class MapBoxes {
     }
 
     public void setCenterBox() {
-        TextField mapPoint = new TextField(" ");
-        mapPoint.setFont(Font.font("Arial", 2));
-        mapPoint.setPrefSize(prefWidth, prefHeight);
-        mapPoint.setLayoutX(halfOfPaneWidth - (prefWidth / 2));
-        mapPoint.setLayoutY(halfofPaneHeight - (prefHeight / 2));
+        centerField = new TextField(" ");
+        centerField.setFont(Font.font("Arial", 2));
+        centerField.setPrefSize(prefWidth, prefHeight);
+        centerField.setLayoutX(halfOfPaneWidth - (prefWidth / 2));
+        centerField.setLayoutY(halfofPaneHeight - (prefHeight / 2));
 
-        if (location.getMonsterLivingHere() != null) {
-            mapPoint.setStyle("-fx-background-color: red;");
-        }
+        colorRedIfMonster(location, centerField);
 
-        pane.getChildren().add(mapPoint);
+        pane.getChildren().add(centerField);
     }
 
     public MapBoxes(Location currentLocation, Pane currentPane) {
@@ -121,5 +148,17 @@ public class MapBoxes {
 
     public void setPane(Pane pane) {
         this.pane = pane;
+    }
+
+    public TextField getCenterField() {
+        return centerField;
+    }
+
+    public void setCenterField(TextField centerField) {
+        this.centerField = centerField;
+    }
+
+    public void clearPane() {
+        pane.getChildren().clear();
     }
 }
