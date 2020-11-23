@@ -43,7 +43,6 @@ public class SecondController {
         tblclmnPriceVendor.setCellValueFactory(new PropertyValueFactory<>("Price"));
         tblclmnBuyVendor.setCellValueFactory(new PropertyValueFactory<>("button"));
 
-//        currentPlayer = SavePlayer.getSavedPlayer();
         updateTables();
     }
 

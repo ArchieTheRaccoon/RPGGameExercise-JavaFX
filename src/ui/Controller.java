@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 
@@ -48,17 +49,23 @@ public class Controller implements GameObserver {
     public TableColumn<QuestTable, String> tblclmnQuestName;
     public TableColumn<QuestTable, String> tblclmnDone;
     public ImageView imageLogo;
+    public Pane mapPane;
 
     private Monster currentMonster;
     private World world;
     private Player player;
     private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
+    private MapBoxes mapBox = new MapBoxes(World.locationByID(World.LOCATION_ID_HOME), mapPane);
 
     private Controller controller;
 
     public void initialize() {
         MusicPlayer.turnOnMenuMusic();
         initializeComponents();
+        mapBox.setLocation(player.getCurrentLocation());
+        mapBox.setPane(mapPane);
+        mapBox.setCenterBox();
+        mapBox.setPlayerBox();
     }
 
     public void clickButtonNorth() {
@@ -204,6 +211,9 @@ public class Controller implements GameObserver {
             btnUseWeapon.setVisible(false);
         }
 
+        mapBox.setLocation(player.getCurrentLocation());
+        mapBox.setPane(mapPane);
+        mapBox.updateMap();
     }
 
     private void useWeapon() {

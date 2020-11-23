@@ -47,33 +47,33 @@
                 <Font name="Comic Sans MS Bold" size="14.0" />
             </font>
         </Label>
-        <ComboBox fx:id="cboWeapons" layoutX="369.0" layoutY="559.0" prefWidth="150.0" />
-        <ComboBox fx:id="cboPotions" layoutX="369.0" layoutY="593.0" prefWidth="150.0" />
-        <Label layoutX="617.0" layoutY="531.0" text="Select action">
+        <ComboBox fx:id="cboWeapons" layoutX="369.0" layoutY="620.0" prefWidth="150.0" />
+        <ComboBox fx:id="cboPotions" layoutX="369.0" layoutY="650.0" prefWidth="150.0" />
+        <Label layoutX="617.0" layoutY="600.0" text="Select action">
          <font>
             <Font name="Comic Sans MS Bold" size="13.0" />
          </font></Label>
-        <Button fx:id="btnUseWeapon" layoutX="620.0" layoutY="559.0" mnemonicParsing="false" onAction="#clickButtonUseWeapon" text="Use">
+        <Button fx:id="btnUseWeapon" layoutX="620.0" layoutY="620.0" mnemonicParsing="false" onAction="#clickButtonUseWeapon" text="Use">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Button>
-        <Button fx:id="btnUsePotion" layoutX="620.0" layoutY="593.0" mnemonicParsing="false" onAction="#clickButtonUsePotion" text="Use">
+        <Button fx:id="btnUsePotion" layoutX="620.0" layoutY="650.0" mnemonicParsing="false" onAction="#clickButtonUsePotion" text="Use">
          <font>
             <Font name="Comic Sans MS" size="12.0" />
          </font></Button>
-        <Button fx:id="btnNorth" layoutX="493.0" layoutY="433.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonNorth" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬆" textFill="#d0d0d0">
+        <Button fx:id="btnNorth" layoutX="508.0" layoutY="433.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonNorth" prefHeight="30.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬆" textFill="#d0d0d0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-        <Button fx:id="btnEast" layoutX="573.0" layoutY="457.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonEast" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="➡" textFill="#d0d0d0">
+        <Button fx:id="btnEast" layoutX="675.0" layoutY="500.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonEast" prefHeight="30.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="➡" textFill="#d0d0d0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-        <Button fx:id="btnSouth" layoutX="493.0" layoutY="487.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonSouth" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬇" textFill="#d0d0d0">
+        <Button fx:id="btnSouth" layoutX="508.0" layoutY="565.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonSouth" prefHeight="30.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬇" textFill="#d0d0d0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-        <Button fx:id="btnWest" layoutX="412.0" layoutY="457.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonWest" prefHeight="30.0" prefWidth="75.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬅" textFill="#d0d0d0">
+        <Button fx:id="btnWest" layoutX="340.0" layoutY="500.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clickButtonWest" prefHeight="30.0" prefWidth="40.0" style="-fx-background-radius: 30; -fx-background-color: gray;" text="⬅" textFill="#d0d0d0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
@@ -97,5 +97,6 @@
         <ImageView fx:id="imageLogo" fitHeight="97.0" fitWidth="97.0" layoutX="210.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@rpg.png" />
         </ImageView>
+      <Pane fx:id="mapPane" layoutX="380.0" layoutY="465.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="295.0" />
     </children>
 </Pane>
