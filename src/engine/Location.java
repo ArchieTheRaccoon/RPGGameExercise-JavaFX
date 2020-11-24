@@ -8,25 +8,15 @@ public class Location {
     private Monster monsterLivingHere;
     private Location locationToNorth, locationToEast, locationToSouth, locationToWest;
     private Vendor vendorWorkingHere;
-    private boolean playerHasBeenHere;
 
 
-    public Location(int id, String name, String description, Item itemRequiredToEnter, Quest questAvailableHere, Monster monsterLivingHere, boolean wasHere) {
+    public Location(int id, String name, String description, Item itemRequiredToEnter, Quest questAvailableHere, Monster monsterLivingHere) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.itemRequiredToEnter = itemRequiredToEnter;
         this.questAvailableHere = questAvailableHere;
         this.monsterLivingHere = monsterLivingHere;
-        this.playerHasBeenHere = wasHere;
-    }
-
-    public boolean isPlayerHasBeenHere() {
-        return playerHasBeenHere;
-    }
-
-    public void setPlayerHasBeenHere(boolean playerHasBeenHere) {
-        this.playerHasBeenHere = playerHasBeenHere;
     }
 
     public String getDescription() {

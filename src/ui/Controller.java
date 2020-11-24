@@ -55,13 +55,11 @@ public class Controller implements GameObserver {
     private World world;
     private Player player;
     private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
-    private MapBoxes mapBox = new MapBoxes(World.locationByID(World.LOCATION_ID_HOME), mapPane);
 
     private Controller controller;
 
     public void initialize() {
         MusicPlayer.turnOnMenuMusic();
-        mapBox.setPane(mapPane);
         initializeComponents();
     }
 
@@ -207,14 +205,6 @@ public class Controller implements GameObserver {
             btnUsePotion.setVisible(false);
             btnUseWeapon.setVisible(false);
         }
-
-        newLocation.setPlayerHasBeenHere(true);
-
-        mapBox.clearPane();
-        mapBox.setLocation(player.getCurrentLocation());
-        mapBox.setCenterBox();
-        mapBox.checkAllDirections(mapBox.getCenterField(), mapBox.getLocation());
-        mapBox.setPlayerBox();
     }
 
     private void useWeapon() {
