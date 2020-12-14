@@ -368,12 +368,7 @@ public class Player extends LivingCreature {
         return new ArrayList<InventoryItem>(inventory.stream().filter(ii -> ii.getDetails() instanceof HealingPotion).collect(Collectors.toList()));
     }
 
-    public void usePotion(Player player,
-                          Button btnTrade,
-                          Button btnUseWeapon,
-                          Button btnUsePotion,
-                          ComboBox<String> cboWeapons,
-                          ComboBox<String> cboPotions) {
+    public void usePotion(String potionName) {
         {
             MusicPlayer.soundPotion();
             HealingPotion potion = null;
@@ -381,7 +376,7 @@ public class Player extends LivingCreature {
             for (InventoryItem ii : getInventory()) {
                 if (ii.getDetails() instanceof HealingPotion) {
                     if (ii.getQuantity() > 0) {
-                        if (ii.getDetails().getName().equals(cboPotions.getSelectionModel().getSelectedItem())) {
+                        if (ii.getDetails().getName().equals(potionName)) {
                             potion = (HealingPotion) ii.getDetails();
                         }
                     }
@@ -402,7 +397,7 @@ public class Player extends LivingCreature {
         }
     }
 
-    public void useWeapon(ComboBox<String> cboWeapons) {
+    public void useWeapon(String weaponName) {
         {
             MusicPlayer.soundAttack();
             Weapon currentWeapon = null;
@@ -410,7 +405,7 @@ public class Player extends LivingCreature {
             for (InventoryItem ii : getInventory()) {
                 if (ii.getDetails() instanceof Weapon) {
                     if (ii.getQuantity() > 0) {
-                        if (ii.getDetails().getName().equals(cboWeapons.getSelectionModel().getSelectedItem())) {
+                        if (ii.getDetails().getName().equals(weaponName)) {
                             currentWeapon = (Weapon) ii.getDetails();
                         }
                     }

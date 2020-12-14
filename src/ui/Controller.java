@@ -17,7 +17,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,12 +79,13 @@ public class Controller implements GameObserver {
     }
 
     public void clickButtonUseWeapon() {
-        player.useWeapon(cboWeapons);
+        String weaponName = cboWeapons.getSelectionModel().getSelectedItem();
+        player.useWeapon(weaponName);
     }
 
     public void clickButtonUsePotion() {
-        player.usePotion(player, btnTrade, btnUseWeapon, btnUsePotion,
-                cboWeapons, cboPotions);
+        String potionName = cboPotions.getSelectionModel().getSelectedItem();
+        player.usePotion(potionName);
     }
 
     private void initializeComponents() {
@@ -218,6 +218,9 @@ public class Controller implements GameObserver {
         }
 
         initializeObservableLabels();
+
+        player.addObserver(this);
+        updateGUI(Event.UPDATE_ALL, null);
 
         player.moveTo(player.getCurrentLocation());
     }
