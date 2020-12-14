@@ -86,6 +86,7 @@ public class Player extends LivingCreature {
             }
 
             return player;
+
         } catch (Exception e) {
 
             //If there was an error with the XML data, return a default player object
@@ -158,6 +159,7 @@ public class Player extends LivingCreature {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+        notifyObservers(GameObserver.Event.UPDATE_LOCATION, null);
     }
 
     public boolean hasRequiredItemToEnterThisLocation(Location location) {
@@ -400,12 +402,7 @@ public class Player extends LivingCreature {
         }
     }
 
-    public void useWeapon(Player player,
-                          Button btnTrade,
-                          Button btnUseWeapon,
-                          Button btnUsePotion,
-                          ComboBox<String> cboWeapons,
-                          ComboBox<String> cboPotions) {
+    public void useWeapon(ComboBox<String> cboWeapons) {
         {
             MusicPlayer.soundAttack();
             Weapon currentWeapon = null;
@@ -500,8 +497,6 @@ public class Player extends LivingCreature {
         }
 
         setCurrentLocation(newLocation);
-
-        notifyObservers(GameObserver.Event.UPDATE_LOCATION, null);
 
         setCurrentHitPoints(getMaximumHitPoints());
 

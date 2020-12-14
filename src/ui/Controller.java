@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,8 +80,7 @@ public class Controller implements GameObserver {
     }
 
     public void clickButtonUseWeapon() {
-        player.useWeapon(player, btnTrade, btnUseWeapon, btnUsePotion,
-                cboWeapons, cboPotions);
+        player.useWeapon(cboWeapons);
     }
 
     public void clickButtonUsePotion() {
@@ -327,13 +327,5 @@ public class Controller implements GameObserver {
 
     public void setPlayer(Player playerNew) {
         this.player = playerNew;
-    }
-
-    public Monster getCurrentMonster() {
-        return currentMonster;
-    }
-
-    public void setCurrentMonster(Monster monster) {
-        currentMonster = monster;
     }
 }
