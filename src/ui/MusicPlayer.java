@@ -1,5 +1,6 @@
 package ui;
 
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -69,5 +70,41 @@ public class MusicPlayer {
 
     public static boolean isMenuMusicPlaying() {
         return isMenuMusicPlaying;
+    }
+
+    public static void soundMove() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eMOVE.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void soundAttack() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eATTACK.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void soundPotion() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/ePOTION.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void soundLevel() {
+        try {
+            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eLEVEL.mp3").toUri().toString());
+            eMOVE.play(0.5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

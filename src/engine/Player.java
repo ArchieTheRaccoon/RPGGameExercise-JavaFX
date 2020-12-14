@@ -2,6 +2,7 @@ package engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,8 +10,12 @@ import javax.xml.transform.dom.DOMSource;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import org.w3c.dom.*;
+import ui.Controller;
 import ui.GameObserver;
+import ui.MusicPlayer;
 
 public class Player extends LivingCreature {
     private IntegerProperty gold = new SimpleIntegerProperty();
@@ -21,6 +26,8 @@ public class Player extends LivingCreature {
     private Location currentLocation;
     private Weapon currentWeapon;
     private HealingPotion currentPotion;
+    private Controller controller;
+    private Monster currentMonster;
 
     public Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) {
         super(currentHitPoints, maximumHitPoints);
@@ -359,4 +366,214 @@ public class Player extends LivingCreature {
         return new ArrayList<InventoryItem>(inventory.stream().filter(ii -> ii.getDetails() instanceof HealingPotion).collect(Collectors.toList()));
     }
 
+    public void usePotion(Player player,
+                          Button btnTrade,
+                          Button btnUseWeapon,
+                          Button btnUsePotion,
+                          ComboBox<String> cboWeapons,
+                          ComboBox<String> cboPotions) {
+        {
+            MusicPlayer.soundPotion();
+            HealingPotion potion = null;
+
+            for (InventoryItem ii : getInventory()) {
+                if (ii.getDetails() instanceof HealingPotion) {
+                    if (ii.getQuantity() > 0) {
+                        if (ii.getDetails().getName().equals(cboPotions.getSelectionModel().getSelectedItem())) {
+                            potion = (HealingPotion) ii.getDetails();
+                        }
+                    }
+                }
+            }
+
+            setCurrentHitPoints(getCurrentHitPoints() + potion.getAmountToHeal());
+
+            if (getCurrentHitPoints() > getMaximumHitPoints()) {
+                setCurrentHitPoints(getMaximumHitPoints());
+            }
+
+            removeItemFromInventory(potion, 1);
+
+            notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"You drink a " + potion.getName() + ".\n");
+
+            damageFromMonster();
+        }
+    }
+
+    public void useWeapon(Player player,
+                          Button btnTrade,
+                          Button btnUseWeapon,
+                          Button btnUsePotion,
+                          ComboBox<String> cboWeapons,
+                          ComboBox<String> cboPotions) {
+        {
+            MusicPlayer.soundAttack();
+            Weapon currentWeapon = null;
+
+            for (InventoryItem ii : getInventory()) {
+                if (ii.getDetails() instanceof Weapon) {
+                    if (ii.getQuantity() > 0) {
+                        if (ii.getDetails().getName().equals(cboWeapons.getSelectionModel().getSelectedItem())) {
+                            currentWeapon = (Weapon) ii.getDetails();
+                        }
+                    }
+                }
+            }
+
+            int damageToMonster = RandomNumberGenerator.numberBetween(currentWeapon.getMinimumDamage(), currentWeapon.getMaximumDamage());
+
+            currentMonster.setCurrentHitPoints(currentMonster.getCurrentHitPoints() - damageToMonster);
+
+            notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                    "Your hit the " + currentMonster.getName() + " for " + damageToMonster + " points.\n");
+
+            if (currentMonster.getCurrentHitPoints() <= 0) {
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                        "\nYou defeated the " + currentMonster.getName() + ".\n");
+
+                addExperiencePoints(currentMonster.getRewardExperiencePoints());
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                        "You receive " + currentMonster.getRewardExperiencePoints() + " experience points.\n");
+
+                setGold(getGold() + currentMonster.getRewardGold());
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                        "You receive " + currentMonster.getRewardGold() + " gold.\n");
+
+                List<InventoryItem> lootedItems = new ArrayList<InventoryItem>();
+
+                for (LootItem lootItem : currentMonster.getLootTable()) {
+                    if (RandomNumberGenerator.numberBetween(1, 100) <= lootItem.getDropPercentage()) {
+                        lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
+                    }
+                }
+
+                if (lootedItems.size() == 0) {
+                    for (LootItem lootItem : currentMonster.getLootTable()) {
+                        if (lootItem.isDefaultItem()) {
+                            lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
+                        }
+                    }
+                }
+
+                for (InventoryItem ii : lootedItems) {
+                    addItemToInventory(ii.getDetails(), ii.getQuantity());
+
+                    if (ii.getQuantity() == 1) {
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                "You loot " + ii.getQuantity() + " " + ii.getDetails().getName() + ".\n");
+                    } else {
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                "You loot " + ii.getQuantity() + " " + ii.getDetails().getNamePlural() + ".\n");
+                    }
+                }
+
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"\n");
+
+                moveTo(getCurrentLocation());
+            } else {
+                damageFromMonster();
+            }
+        }
+    }
+
+    public void damageFromMonster() {
+        int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
+
+        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                "The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
+
+        setCurrentHitPoints(getCurrentHitPoints() - damageToPlayer);
+
+        if (getCurrentHitPoints() <= 0) {
+            notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"The " + currentMonster.getName() + " killed you.\n");
+
+            moveTo(World.locationByID(World.LOCATION_ID_HOME));
+        }
+    }
+
+    public void moveTo(Location newLocation) {
+
+        if (!hasRequiredItemToEnterThisLocation(newLocation)) {
+            notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                    "You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
+            return;
+        }
+
+        setCurrentLocation(newLocation);
+
+        notifyObservers(GameObserver.Event.UPDATE_LOCATION, null);
+
+        setCurrentHitPoints(getMaximumHitPoints());
+
+        if (newLocation.getQuestAvailableHere() != null) {
+            boolean playerAlreadyHasQuest = hasThisQuest(newLocation.getQuestAvailableHere());
+            boolean playerAlreadyCompletedQuest = completedThisQuest(newLocation.getQuestAvailableHere());
+
+            if (playerAlreadyHasQuest) {
+                if (!playerAlreadyCompletedQuest) {
+                    boolean playerHasAllItemsToCompleteQuest = hasAllQuestCompletionItems(newLocation.getQuestAvailableHere());
+
+                    if (playerHasAllItemsToCompleteQuest) {
+                        MusicPlayer.soundLevel();
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                "\nYou completed the " + newLocation.getQuestAvailableHere().getName() + "quest.\n");
+
+                        removeQuestCompletionItems(newLocation.getQuestAvailableHere());
+
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"You receive \n");
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                newLocation.getQuestAvailableHere().getRewardExperiencePoints() + " experience points\n");
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                newLocation.getQuestAvailableHere().getRewardItem().getName() + " gold\n");
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                newLocation.getQuestAvailableHere().getRewardItem().getName() + "\n");
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"\n");
+
+                        addExperiencePoints(newLocation.getQuestAvailableHere().getRewardExperiencePoints());
+                        setGold(getGold() + newLocation.getQuestAvailableHere().getRewardGold());
+
+                        addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem(), 1);
+
+                        markQuestCompleted(newLocation.getQuestAvailableHere());
+                    }
+                }
+            } else {
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                        "You receive the " + newLocation.getQuestAvailableHere().getName() + " quest.\n");
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,newLocation.getDescription() + "\n");
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"To complete it, return with:\n");
+                for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
+                    if (qci.getQuantity() == 1) {
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                qci.getQuantity() + " " + qci.getDetails().getName() + "\n");
+                    } else {
+                        notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,
+                                qci.getQuantity() + " " + qci.getDetails().getNamePlural() + "\n");
+                    }
+                }
+                notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"\n");
+
+                addQuestToQuestsList(newLocation.getQuestAvailableHere());
+            }
+        }
+
+        if (newLocation.getMonsterLivingHere() != null) {
+            MusicPlayer.turnOffMenuMusic();
+            MusicPlayer.turnOnFightMusic();
+            notifyObservers(GameObserver.Event.UPDATE_TXT_MESSAGES,"You see a " + newLocation.getMonsterLivingHere().getName() + "\n");
+
+            Monster standardMonster = World.monsterByID(newLocation.getMonsterLivingHere().getId());
+            currentMonster = new Monster(standardMonster.getId(), standardMonster.getName(), standardMonster.getMaximumDamage(),
+                    standardMonster.getCurrentHitPoints(), standardMonster.getMaximumHitPoints(),
+                    standardMonster.getRewardExperiencePoints(), standardMonster.getRewardGold());
+
+            for (LootItem lootItem : standardMonster.getLootTable()) {
+                currentMonster.getLootTable().add(lootItem);
+            }
+        }
+    }
+
+    public void setController(Controller thisController) {
+        this.controller = thisController;
+    }
 }

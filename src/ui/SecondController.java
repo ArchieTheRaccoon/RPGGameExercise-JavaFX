@@ -129,8 +129,8 @@ public class SecondController {
 
     public void soundMoney() {
         try {
-            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eMONEY.mp3").toUri().toString());
-            eMOVE.play(0.6);
+            AudioClip eMONEY = new AudioClip(Paths.get("src/ui/eMONEY.mp3").toUri().toString());
+            eMONEY.play(0.6);
         } catch (Exception e) {
             e.printStackTrace();
         }

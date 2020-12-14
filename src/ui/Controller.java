@@ -10,26 +10,24 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 
-import javax.xml.transform.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Controller implements GameObserver {
+    private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
     public Label lblHitPoints;
     public Label lblGold;
     public Label lblExperience;
     public Label lblLevel;
-
     public ComboBox<String> cboWeapons;
     public ComboBox<String> cboPotions;
-
     public Button btnUseWeapon;
     public Button btnUsePotion;
     public Button btnNorth;
@@ -39,7 +37,6 @@ public class Controller implements GameObserver {
     public Button btnLoadData;
     public Button btnSaveData;
     public Button btnTrade;
-
     public TextArea txtLocation;
     public TextArea txtMessages;
     public TableView<InventoryTable> tblInventory;
@@ -50,45 +47,45 @@ public class Controller implements GameObserver {
     public TableColumn<QuestTable, String> tblclmnDone;
     public ImageView imageLogo;
     public Pane mapPane;
-
     private Monster currentMonster;
     private World world;
     private Player player;
-    private final String PLAYER_DATA_FILE_NAME = "playerData.xml";
-
     private Controller controller;
 
     public void initialize() {
         MusicPlayer.turnOnMenuMusic();
         initializeComponents();
+        player.setController(this);
     }
 
     public void clickButtonNorth() {
-        soundMove();
-        moveTo(player.getCurrentLocation().getLocationToNorth());
+        MusicPlayer.soundMove();
+        player.moveTo(player.getCurrentLocation().getLocationToNorth());
     }
 
     public void clickButtonEast() {
-        soundMove();
-        moveTo(player.getCurrentLocation().getLocationToEast());
+        MusicPlayer.soundMove();
+        player.moveTo(player.getCurrentLocation().getLocationToEast());
     }
 
     public void clickButtonSouth() {
-        soundMove();
-        moveTo(player.getCurrentLocation().getLocationToSouth());
+        MusicPlayer.soundMove();
+        player.moveTo(player.getCurrentLocation().getLocationToSouth());
     }
 
     public void clickButtonWest() {
-        soundMove();
-        moveTo(player.getCurrentLocation().getLocationToWest());
+        MusicPlayer.soundMove();
+        player.moveTo(player.getCurrentLocation().getLocationToWest());
     }
 
     public void clickButtonUseWeapon() {
-        useWeapon();
+        player.useWeapon(player, btnTrade, btnUseWeapon, btnUsePotion,
+                cboWeapons, cboPotions);
     }
 
     public void clickButtonUsePotion() {
-        usePotion();
+        player.usePotion(player, btnTrade, btnUseWeapon, btnUsePotion,
+                cboWeapons, cboPotions);
     }
 
     private void initializeComponents() {
@@ -101,7 +98,7 @@ public class Controller implements GameObserver {
         initializeObservableLabels();
 
         player.addObserver(this);
-        moveTo(World.locationByID(World.LOCATION_ID_HOME));
+        player.moveTo(World.locationByID(World.LOCATION_ID_HOME));
 
         tblclmnItemName.setCellValueFactory(new PropertyValueFactory<>("ItemName"));
         tblclmnQuantity.setCellValueFactory(new PropertyValueFactory<>("ItemAmount"));
@@ -109,211 +106,6 @@ public class Controller implements GameObserver {
         tblclmnDone.setCellValueFactory(new PropertyValueFactory<>("IsCompleted"));
 
         updateGUI(Event.UPDATE_ALL, null);
-    }
-
-    private void moveTo(Location newLocation) {
-
-        if (!player.hasRequiredItemToEnterThisLocation(newLocation)) {
-            txtMessages.appendText("You must have a " + newLocation.getItemRequiredToEnter().getName() + " to enter this location.\n");
-            return;
-        }
-
-        player.setCurrentLocation(newLocation);
-
-        btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
-
-        btnNorth.setVisible(newLocation.getLocationToNorth() != null);
-        btnEast.setVisible(newLocation.getLocationToEast() != null);
-        btnSouth.setVisible(newLocation.getLocationToSouth() != null);
-        btnWest.setVisible(newLocation.getLocationToWest() != null);
-
-        txtLocation.setText(newLocation.getName() + "\n");
-        txtLocation.appendText(newLocation.getDescription() + "\n");
-
-        player.setCurrentHitPoints(player.getMaximumHitPoints());
-
-        if (newLocation.getQuestAvailableHere() != null) {
-            boolean playerAlreadyHasQuest = player.hasThisQuest(newLocation.getQuestAvailableHere());
-            boolean playerAlreadyCompletedQuest = player.completedThisQuest(newLocation.getQuestAvailableHere());
-
-            if (playerAlreadyHasQuest) {
-                if (!playerAlreadyCompletedQuest) {
-                    boolean playerHasAllItemsToCompleteQuest = player.hasAllQuestCompletionItems(newLocation.getQuestAvailableHere());
-
-                    if (playerHasAllItemsToCompleteQuest) {
-                        soundLevel();
-                        txtMessages.appendText("\nYou completed the " + newLocation.getQuestAvailableHere().getName() + "quest.\n");
-
-                        player.removeQuestCompletionItems(newLocation.getQuestAvailableHere());
-
-                        txtMessages.appendText("You receive \n");
-                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardExperiencePoints() + " experience points\n");
-                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardItem().getName() + " gold\n");
-                        txtMessages.appendText(newLocation.getQuestAvailableHere().getRewardItem().getName() + "\n");
-                        txtMessages.appendText("\n");
-
-                        player.addExperiencePoints(newLocation.getQuestAvailableHere().getRewardExperiencePoints());
-                        player.setGold(player.getGold() + newLocation.getQuestAvailableHere().getRewardGold());
-
-                        player.addItemToInventory(newLocation.getQuestAvailableHere().getRewardItem(), 1);
-
-                        player.markQuestCompleted(newLocation.getQuestAvailableHere());
-                    }
-                }
-            } else {
-                txtMessages.appendText("You receive the " + newLocation.getQuestAvailableHere().getName() + " quest.\n");
-                txtMessages.appendText(newLocation.getDescription() + "\n");
-                txtMessages.appendText("To complete it, return with:\n");
-                for (QuestCompletionItem qci : newLocation.getQuestAvailableHere().getQuestCompletionItems()) {
-                    if (qci.getQuantity() == 1) {
-                        txtMessages.appendText(qci.getQuantity() + " " + qci.getDetails().getName() + "\n");
-                    } else {
-                        txtMessages.appendText(qci.getQuantity() + " " + qci.getDetails().getNamePlural() + "\n");
-                    }
-                }
-                txtMessages.appendText("\n");
-
-                player.addQuestToQuestsList(newLocation.getQuestAvailableHere());
-            }
-        }
-
-        if (newLocation.getMonsterLivingHere() != null) {
-            MusicPlayer.turnOffMenuMusic();
-            MusicPlayer.turnOnFightMusic();
-            txtMessages.appendText("You see a " + newLocation.getMonsterLivingHere().getName() + "\n");
-
-            Monster standardMonster = World.monsterByID(newLocation.getMonsterLivingHere().getId());
-            currentMonster = new Monster(standardMonster.getId(), standardMonster.getName(), standardMonster.getMaximumDamage(),
-                    standardMonster.getCurrentHitPoints(), standardMonster.getMaximumHitPoints(),
-                    standardMonster.getRewardExperiencePoints(), standardMonster.getRewardGold());
-
-            for (LootItem lootItem : standardMonster.getLootTable()) {
-                currentMonster.getLootTable().add(lootItem);
-            }
-
-            cboWeapons.setVisible(player.getWeapons().size() > 0);
-            cboPotions.setVisible(player.getPotions().size() > 0);
-            btnUseWeapon.setVisible(player.getWeapons().size() > 0);
-            btnUsePotion.setVisible(player.getPotions().size() > 0);
-        } else {
-            MusicPlayer.turnOffFightMusic();
-            if (!MusicPlayer.isMenuMusicPlaying()) {
-                MusicPlayer.turnOnMenuMusic();
-            }
-            cboPotions.setVisible(false);
-            cboWeapons.setVisible(false);
-            btnUsePotion.setVisible(false);
-            btnUseWeapon.setVisible(false);
-        }
-    }
-
-    private void useWeapon() {
-        soundAttack();
-        Weapon currentWeapon = null;
-
-        for (InventoryItem ii : player.getInventory()) {
-            if (ii.getDetails() instanceof Weapon) {
-                if (ii.getQuantity() > 0) {
-                    if (ii.getDetails().getName().equals(cboWeapons.getSelectionModel().getSelectedItem())) {
-                        currentWeapon = (Weapon) ii.getDetails();
-                    }
-                }
-            }
-        }
-
-        int damageToMonster = RandomNumberGenerator.numberBetween(currentWeapon.getMinimumDamage(), currentWeapon.getMaximumDamage());
-
-        currentMonster.setCurrentHitPoints(currentMonster.getCurrentHitPoints() - damageToMonster);
-
-        txtMessages.appendText("Your hit the " + currentMonster.getName() + " for " + damageToMonster + " points.\n");
-
-        if (currentMonster.getCurrentHitPoints() <= 0) {
-            txtMessages.appendText("\nYou defeated the " + currentMonster.getName() + ".\n");
-
-            player.addExperiencePoints(currentMonster.getRewardExperiencePoints());
-            txtMessages.appendText("You receive " + currentMonster.getRewardExperiencePoints() + " experience points.\n");
-
-            player.setGold(player.getGold() + currentMonster.getRewardGold());
-            txtMessages.appendText("You receive " + currentMonster.getRewardGold() + " gold.\n");
-
-            List<InventoryItem> lootedItems = new ArrayList<InventoryItem>();
-
-            for (LootItem lootItem : currentMonster.getLootTable()) {
-                if (RandomNumberGenerator.numberBetween(1, 100) <= lootItem.getDropPercentage()) {
-                    lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
-                }
-            }
-
-            if (lootedItems.size() == 0) {
-                for (LootItem lootItem : currentMonster.getLootTable()) {
-                    if (lootItem.isDefaultItem()) {
-                        lootedItems.add(new InventoryItem(lootItem.getDetails(), 1));
-                    }
-                }
-            }
-
-            for (InventoryItem ii : lootedItems) {
-                player.addItemToInventory(ii.getDetails(), ii.getQuantity());
-
-                if (ii.getQuantity() == 1) {
-                    txtMessages.appendText("You loot " + ii.getQuantity() + " " + ii.getDetails().getName() + ".\n");
-                } else {
-                    txtMessages.appendText("You loot " + ii.getQuantity() + " " + ii.getDetails().getNamePlural() + ".\n");
-                }
-            }
-
-            txtMessages.appendText("\n");
-
-            moveTo(player.getCurrentLocation());
-        } else {
-            damageFromMonster();
-        }
-
-        updateGUI(Event.UPDATE_ALL, null);
-    }
-
-    private void usePotion() {
-        soundPotion();
-        HealingPotion potion = null;
-
-        for (InventoryItem ii : player.getInventory()) {
-            if (ii.getDetails() instanceof HealingPotion) {
-                if (ii.getQuantity() > 0) {
-                    if (ii.getDetails().getName().equals(cboPotions.getSelectionModel().getSelectedItem())) {
-                        potion = (HealingPotion) ii.getDetails();
-                    }
-                }
-            }
-        }
-
-        player.setCurrentHitPoints(player.getCurrentHitPoints() + potion.getAmountToHeal());
-
-        if (player.getCurrentHitPoints() > player.getMaximumHitPoints()) {
-            player.setCurrentHitPoints(player.getMaximumHitPoints());
-        }
-
-        player.removeItemFromInventory(potion, 1);
-        updateGUI(Event.UPDATE_ALL, null);
-
-        txtMessages.appendText("You drink a " + potion.getName() + ".\n");
-
-        damageFromMonster();
-
-        updateGUI(Event.UPDATE_ALL, null);
-    }
-
-    private void damageFromMonster() {
-        int damageToPlayer = RandomNumberGenerator.numberBetween(0, currentMonster.getMaximumDamage());
-
-        txtMessages.appendText("The " + currentMonster.getName() + " did " + damageToPlayer + " points of damage.\n");
-
-        player.setCurrentHitPoints(player.getCurrentHitPoints() - damageToPlayer);
-
-        if (player.getCurrentHitPoints() <= 0) {
-            txtMessages.appendText("The " + currentMonster.getName() + " killed you.\n");
-
-            moveTo(World.locationByID(World.LOCATION_ID_HOME));
-        }
     }
 
     private void updateInventoryListUI() {
@@ -425,11 +217,9 @@ public class Controller implements GameObserver {
             player = Player.createDefaultPlayer();
         }
 
-        updateGUI(Event.UPDATE_ALL, null);
-
         initializeObservableLabels();
 
-        moveTo(player.getCurrentLocation());
+        player.moveTo(player.getCurrentLocation());
     }
 
     public void saveCurrentWeapon() {
@@ -473,8 +263,41 @@ public class Controller implements GameObserver {
                 break;
             case UPDATE_WEAPON_COMBO:
                 updateWeaponListUI();
+                break;
             case UPDATE_ALL:
                 updateLists();
+                break;
+            case UPDATE_TXT_MESSAGES:
+                txtMessages.appendText((String) content);
+                break;
+            case UPDATE_LOCATION:
+                btnNorth.setVisible(player.getCurrentLocation().getLocationToNorth() != null);
+                btnEast.setVisible(player.getCurrentLocation().getLocationToEast() != null);
+                btnSouth.setVisible(player.getCurrentLocation().getLocationToSouth() != null);
+                btnWest.setVisible(player.getCurrentLocation().getLocationToWest() != null);
+
+                txtLocation.setText(player.getCurrentLocation().getName() + "\n");
+                txtLocation.appendText(player.getCurrentLocation().getDescription() + "\n");
+
+                btnTrade.setVisible(player.getCurrentLocation().getVendorWorkingHere() != null);
+
+                if (player.getCurrentLocation().getMonsterLivingHere() != null) {
+                    cboWeapons.setVisible(player.getWeapons().size() > 0);
+                    cboPotions.setVisible(player.getPotions().size() > 0);
+                    btnUseWeapon.setVisible(player.getWeapons().size() > 0);
+                    btnUsePotion.setVisible(player.getPotions().size() > 0);
+                } else {
+                    MusicPlayer.turnOffFightMusic();
+                    if (!MusicPlayer.isMenuMusicPlaying()) {
+                        MusicPlayer.turnOnMenuMusic();
+                    }
+                    cboWeapons.setVisible(false);
+                    cboPotions.setVisible(false);
+                    btnUseWeapon.setVisible(false);
+                    btnUsePotion.setVisible(false);
+                }
+
+
         }
     }
 
@@ -487,48 +310,12 @@ public class Controller implements GameObserver {
 
             SecondController secondController = fxmlLoader.getController();
             secondController.setCurrentPlayer(this.player);
-            secondController.setController(this.controller);
+            secondController.setController(this);
 
             Stage secondStage = new Stage();
             secondStage.setTitle("Trade");
             secondStage.setScene(new Scene(root));
             secondStage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void soundMove() {
-        try {
-            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eMOVE.mp3").toUri().toString());
-            eMOVE.play(0.5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void soundAttack() {
-        try {
-            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eATTACK.mp3").toUri().toString());
-            eMOVE.play(0.5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void soundPotion() {
-        try {
-            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/ePOTION.mp3").toUri().toString());
-            eMOVE.play(0.5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void soundLevel() {
-        try {
-            AudioClip eMOVE = new AudioClip(Paths.get("src/ui/eLEVEL.mp3").toUri().toString());
-            eMOVE.play(0.5);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -540,5 +327,13 @@ public class Controller implements GameObserver {
 
     public void setPlayer(Player playerNew) {
         this.player = playerNew;
+    }
+
+    public Monster getCurrentMonster() {
+        return currentMonster;
+    }
+
+    public void setCurrentMonster(Monster monster) {
+        currentMonster = monster;
     }
 }
